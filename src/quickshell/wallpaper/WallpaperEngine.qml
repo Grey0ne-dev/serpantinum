@@ -473,132 +473,19 @@ ShellRoot {
                     anchors.fill: parent
                     clip: true
 
-                    Item {
-                        id: maskItemA
-                        width: scene.width
-                        height: scene.height
+                    ShaderEffect {
+                        id: transitionShaderA
+                        anchors.fill: parent
                         visible: false
                         layer.enabled: true
 
-                        Rectangle {
-                            color: "white"
-                            transformOrigin: Item.Center
+                        property vector2d itemSize: Qt.vector2d(width, height)
+                        property real progress: barWindow.transitionProgress
+                        property real transitionType: barWindow.activeTransitionType
+                        property vector2d origin: Qt.vector2d(barWindow.transitionOriginX, barWindow.transitionOriginY)
+                        property vector4d params: Qt.vector4d(barWindow.wipeIsVertical ? 1.0 : 0.0, barWindow.swipeDirection, 0.0, 0.0)
 
-                            readonly property real p: barWindow.transitionProgress
-                            readonly property real cx: barWindow.transitionOriginX * parent.width
-                            readonly property real cy: barWindow.transitionOriginY * parent.height
-                            readonly property real maxR: {
-                                let w = parent.width;
-                                let h = parent.height;
-                                let d1 = Math.sqrt(cx * cx + cy * cy);
-                                let d2 = Math.sqrt((w - cx) * (w - cx) + cy * cy);
-                                let d3 = Math.sqrt(cx * cx + (h - cy) * (h - cy));
-                                let d4 = Math.sqrt((w - cx) * (w - cx) + (h - cy) * (h - cy));
-                                return Math.max(d1, d2, d3, d4);
-                            }
-                            readonly property real diam: p * maxR * 2
-                            readonly property real diagDiag: Math.sqrt(parent.width * parent.width + parent.height * parent.height)
-                            readonly property real diagSize: diagDiag * 2.5
-                            readonly property var diagGeom: {
-                                let w = parent.width;
-                                let h = parent.height;
-                                let d = diagDiag;
-                                if (d <= 0) return { x: 0, y: 0, rot: 0 };
-                                let dir = barWindow.swipeDirection;
-                                let px = 0, py = 0, ux = 0, uy = 0;
-                                if (dir === 4) {
-                                    px = p * w; py = p * h;
-                                    ux = w / d; uy = h / d;
-                                } else if (dir === 5) {
-                                    px = w - p * w; py = p * h;
-                                    ux = -w / d; uy = h / d;
-                                } else if (dir === 6) {
-                                    px = p * w; py = h - p * h;
-                                    ux = w / d; uy = -h / d;
-                                } else {
-                                    px = w - p * w; py = h - p * h;
-                                    ux = -w / d; uy = -h / d;
-                                }
-                                let halfL = diagSize / 2;
-                                let cx = px - halfL * ux;
-                                let cy = py - halfL * uy;
-                                let rot = Math.atan2(uy, ux) * 180 / Math.PI;
-                                return { x: cx - halfL, y: cy - halfL, rot: rot };
-                            }
-
-                            width: {
-                                if (barWindow.activeTransitionType === 1) {
-                                    return barWindow.wipeIsVertical ? parent.width : p * parent.width;
-                                }
-                                if (barWindow.activeTransitionType === 2) {
-                                    return diam;
-                                }
-                                if (barWindow.activeTransitionType === 3) {
-                                    if (barWindow.swipeDirection === 0 || barWindow.swipeDirection === 1) {
-                                        return p * parent.width;
-                                    }
-                                    if (barWindow.swipeDirection === 2 || barWindow.swipeDirection === 3) {
-                                        return parent.width;
-                                    }
-                                    return diagSize;
-                                }
-                                return parent.width;
-                            }
-
-                            height: {
-                                if (barWindow.activeTransitionType === 1) {
-                                    return barWindow.wipeIsVertical ? p * parent.height : parent.height;
-                                }
-                                if (barWindow.activeTransitionType === 2) {
-                                    return diam;
-                                }
-                                if (barWindow.activeTransitionType === 3) {
-                                    if (barWindow.swipeDirection === 0 || barWindow.swipeDirection === 1) {
-                                        return parent.height;
-                                    }
-                                    if (barWindow.swipeDirection === 2 || barWindow.swipeDirection === 3) {
-                                        return p * parent.height;
-                                    }
-                                    return diagSize;
-                                }
-                                return parent.height;
-                            }
-
-                            x: {
-                                if (barWindow.activeTransitionType === 1) {
-                                    return barWindow.wipeIsVertical ? 0 : (parent.width - width) / 2;
-                                }
-                                if (barWindow.activeTransitionType === 2) {
-                                    return cx - width / 2;
-                                }
-                                if (barWindow.activeTransitionType === 3) {
-                                    if (barWindow.swipeDirection === 0) return 0;
-                                    if (barWindow.swipeDirection === 1) return parent.width - width;
-                                    if (barWindow.swipeDirection === 2 || barWindow.swipeDirection === 3) return 0;
-                                    return diagGeom.x;
-                                }
-                                return 0;
-                            }
-
-                            y: {
-                                if (barWindow.activeTransitionType === 1) {
-                                    return barWindow.wipeIsVertical ? (parent.height - height) / 2 : 0;
-                                }
-                                if (barWindow.activeTransitionType === 2) {
-                                    return cy - height / 2;
-                                }
-                                if (barWindow.activeTransitionType === 3) {
-                                    if (barWindow.swipeDirection === 0 || barWindow.swipeDirection === 1) return 0;
-                                    if (barWindow.swipeDirection === 2) return 0;
-                                    if (barWindow.swipeDirection === 3) return parent.height - height;
-                                    return diagGeom.y;
-                                }
-                                return 0;
-                            }
-
-                            rotation: (barWindow.activeTransitionType === 3 && barWindow.swipeDirection >= 4) ? diagGeom.rot : 0
-                            radius: barWindow.activeTransitionType === 2 ? width / 2 : 0
-                        }
+                        fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/transitions/wallpaper_transition.frag.qsb"
                     }
 
                     Item {
@@ -621,7 +508,7 @@ ShellRoot {
                         layer.enabled: barWindow.activeTransitionType !== 0 && isIncoming && !barWindow.isPreloading && p < 1.0
                         layer.effect: MultiEffect {
                             maskEnabled: true
-                            maskSource: maskItemA
+                            maskSource: transitionShaderA
                             maskThresholdMin: 0.0
                             maskSpreadAtMin: 0.0
                         }
@@ -653,132 +540,19 @@ ShellRoot {
                         }
                     }
 
-                    Item {
-                        id: maskItemB
-                        width: scene.width
-                        height: scene.height
+                    ShaderEffect {
+                        id: transitionShaderB
+                        anchors.fill: parent
                         visible: false
                         layer.enabled: true
 
-                        Rectangle {
-                            color: "white"
-                            transformOrigin: Item.Center
+                        property vector2d itemSize: Qt.vector2d(width, height)
+                        property real progress: barWindow.transitionProgress
+                        property real transitionType: barWindow.activeTransitionType
+                        property vector2d origin: Qt.vector2d(barWindow.transitionOriginX, barWindow.transitionOriginY)
+                        property vector4d params: Qt.vector4d(barWindow.wipeIsVertical ? 1.0 : 0.0, barWindow.swipeDirection, 0.0, 0.0)
 
-                            readonly property real p: barWindow.transitionProgress
-                            readonly property real cx: barWindow.transitionOriginX * parent.width
-                            readonly property real cy: barWindow.transitionOriginY * parent.height
-                            readonly property real maxR: {
-                                let w = parent.width;
-                                let h = parent.height;
-                                let d1 = Math.sqrt(cx * cx + cy * cy);
-                                let d2 = Math.sqrt((w - cx) * (w - cx) + cy * cy);
-                                let d3 = Math.sqrt(cx * cx + (h - cy) * (h - cy));
-                                let d4 = Math.sqrt((w - cx) * (w - cx) + (h - cy) * (h - cy));
-                                return Math.max(d1, d2, d3, d4);
-                            }
-                            readonly property real diam: p * maxR * 2
-                            readonly property real diagDiag: Math.sqrt(parent.width * parent.width + parent.height * parent.height)
-                            readonly property real diagSize: diagDiag * 2.5
-                            readonly property var diagGeom: {
-                                let w = parent.width;
-                                let h = parent.height;
-                                let d = diagDiag;
-                                if (d <= 0) return { x: 0, y: 0, rot: 0 };
-                                let dir = barWindow.swipeDirection;
-                                let px = 0, py = 0, ux = 0, uy = 0;
-                                if (dir === 4) {
-                                    px = p * w; py = p * h;
-                                    ux = w / d; uy = h / d;
-                                } else if (dir === 5) {
-                                    px = w - p * w; py = p * h;
-                                    ux = -w / d; uy = h / d;
-                                } else if (dir === 6) {
-                                    px = p * w; py = h - p * h;
-                                    ux = w / d; uy = -h / d;
-                                } else {
-                                    px = w - p * w; py = h - p * h;
-                                    ux = -w / d; uy = -h / d;
-                                }
-                                let halfL = diagSize / 2;
-                                let cx = px - halfL * ux;
-                                let cy = py - halfL * uy;
-                                let rot = Math.atan2(uy, ux) * 180 / Math.PI;
-                                return { x: cx - halfL, y: cy - halfL, rot: rot };
-                            }
-
-                            width: {
-                                if (barWindow.activeTransitionType === 1) {
-                                    return barWindow.wipeIsVertical ? parent.width : p * parent.width;
-                                }
-                                if (barWindow.activeTransitionType === 2) {
-                                    return diam;
-                                }
-                                if (barWindow.activeTransitionType === 3) {
-                                    if (barWindow.swipeDirection === 0 || barWindow.swipeDirection === 1) {
-                                        return p * parent.width;
-                                    }
-                                    if (barWindow.swipeDirection === 2 || barWindow.swipeDirection === 3) {
-                                        return parent.width;
-                                    }
-                                    return diagSize;
-                                }
-                                return parent.width;
-                            }
-
-                            height: {
-                                if (barWindow.activeTransitionType === 1) {
-                                    return barWindow.wipeIsVertical ? p * parent.height : parent.height;
-                                }
-                                if (barWindow.activeTransitionType === 2) {
-                                    return diam;
-                                }
-                                if (barWindow.activeTransitionType === 3) {
-                                    if (barWindow.swipeDirection === 0 || barWindow.swipeDirection === 1) {
-                                        return parent.height;
-                                    }
-                                    if (barWindow.swipeDirection === 2 || barWindow.swipeDirection === 3) {
-                                        return p * parent.height;
-                                    }
-                                    return diagSize;
-                                }
-                                return parent.height;
-                            }
-
-                            x: {
-                                if (barWindow.activeTransitionType === 1) {
-                                    return barWindow.wipeIsVertical ? 0 : (parent.width - width) / 2;
-                                }
-                                if (barWindow.activeTransitionType === 2) {
-                                    return cx - width / 2;
-                                }
-                                if (barWindow.activeTransitionType === 3) {
-                                    if (barWindow.swipeDirection === 0) return 0;
-                                    if (barWindow.swipeDirection === 1) return parent.width - width;
-                                    if (barWindow.swipeDirection === 2 || barWindow.swipeDirection === 3) return 0;
-                                    return diagGeom.x;
-                                }
-                                return 0;
-                            }
-
-                            y: {
-                                if (barWindow.activeTransitionType === 1) {
-                                    return barWindow.wipeIsVertical ? (parent.height - height) / 2 : 0;
-                                }
-                                if (barWindow.activeTransitionType === 2) {
-                                    return cy - height / 2;
-                                }
-                                if (barWindow.activeTransitionType === 3) {
-                                    if (barWindow.swipeDirection === 0 || barWindow.swipeDirection === 1) return 0;
-                                    if (barWindow.swipeDirection === 2) return 0;
-                                    if (barWindow.swipeDirection === 3) return parent.height - height;
-                                    return diagGeom.y;
-                                }
-                                return 0;
-                            }
-
-                            rotation: (barWindow.activeTransitionType === 3 && barWindow.swipeDirection >= 4) ? diagGeom.rot : 0
-                            radius: barWindow.activeTransitionType === 2 ? width / 2 : 0
-                        }
+                        fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/transitions/wallpaper_transition.frag.qsb"
                     }
 
                     Item {
@@ -801,7 +575,7 @@ ShellRoot {
                         layer.enabled: barWindow.activeTransitionType !== 0 && isIncoming && !barWindow.isPreloading && p < 1.0
                         layer.effect: MultiEffect {
                             maskEnabled: true
-                            maskSource: maskItemB
+                            maskSource: transitionShaderB
                             maskThresholdMin: 0.0
                             maskSpreadAtMin: 0.0
                         }
