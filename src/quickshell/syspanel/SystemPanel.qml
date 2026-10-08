@@ -184,9 +184,6 @@ Item {
             resetAndPlayIntro();
 
             animCapacity = batCapacity;
-            if (typeof waveCanvas !== "undefined" && waveCanvas) {
-                waveCanvas.requestPaint();
-            }
 
             if (typeof volSlider !== "undefined" && volSlider && !root.isDraggingVol) {
                 volSlider.value = root.sysVolume;

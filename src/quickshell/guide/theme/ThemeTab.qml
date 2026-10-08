@@ -342,7 +342,6 @@ Item {
     onVisibleChanged: {
         if (visible) {
             activateTab();
-            Qt.callLater(function() { themesGrid.forceLayout(); });
         } else {
             if (fontDropdown.isOpen) fontDropdown.closePopup();
             if (wpDirDropdown.isOpen) wpDirDropdown.closePopup();
