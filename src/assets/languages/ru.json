@@ -970,6 +970,16 @@
         "pomo_skipped_focus_body": "Фокус-сессия пропущена. Переход к перерыву.",
         "pomo_skipped_break_body": "Перерыв пропущен. Возврат к фокус-сессии."
       }
+    },
+    "draw": {
+      "notification": {
+        "app_name": "DrawAction",
+        "saved_title": "Рисунок сохранён",
+        "copied_title": "Рисунок скопирован",
+        "copied_body": "Рисунок скопирован в буфер обмена",
+        "failed_title": "Ошибка экспорта",
+        "failed_body": "Не удалось сохранить рисунок"
+      }
     }
   },
   "screenshot": {

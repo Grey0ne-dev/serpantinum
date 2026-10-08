@@ -926,6 +926,16 @@
         "pomo_skipped_focus_body": "집중 세션을 건너뛰고 휴식으로 넘어갑니다.",
         "pomo_skipped_break_body": "휴식을 건너뛰고 다시 집중으로 넘어갑니다."
       }
+    },
+    "draw": {
+      "notification": {
+        "app_name": "DrawAction",
+        "saved_title": "Drawing saved",
+        "copied_title": "Drawing copied",
+        "copied_body": "Drawing copied to clipboard",
+        "failed_title": "Export failed",
+        "failed_body": "Could not save drawing"
+      }
     }
   },
   "screenshot": {

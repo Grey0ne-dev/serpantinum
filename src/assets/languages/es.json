@@ -970,6 +970,16 @@
         "pomo_skipped_focus_body": "Sesión de enfoque omitida. Pasando al descanso.",
         "pomo_skipped_break_body": "Descanso omitido. Volviendo al enfoque."
       }
+    },
+    "draw": {
+      "notification": {
+        "app_name": "DrawAction",
+        "saved_title": "Dibujo guardado",
+        "copied_title": "Dibujo copiado",
+        "copied_body": "Dibujo copiado al portapapeles",
+        "failed_title": "Error al exportar",
+        "failed_body": "No se pudo guardar el dibujo"
+      }
     }
   },
   "screenshot": {

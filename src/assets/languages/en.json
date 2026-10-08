@@ -926,6 +926,16 @@
         "pomo_skipped_focus_body": "Focus session skipped. Moving to break.",
         "pomo_skipped_break_body": "Break skipped. Moving back to focus."
       }
+    },
+    "draw": {
+      "notification": {
+        "app_name": "DrawAction",
+        "saved_title": "Drawing saved",
+        "copied_title": "Drawing copied",
+        "copied_body": "Drawing copied to clipboard",
+        "failed_title": "Export failed",
+        "failed_body": "Could not save drawing"
+      }
     }
   },
   "screenshot": {

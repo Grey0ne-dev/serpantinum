@@ -949,6 +949,16 @@
         "pomo_skipped_focus_body": "Фокус-сесію пропущено. Перехід до перерви.",
         "pomo_skipped_break_body": "Перерву пропущено. Повернення до фокус-сесії."
       }
+    },
+    "draw": {
+      "notification": {
+        "app_name": "DrawAction",
+        "saved_title": "Малюнок збережено",
+        "copied_title": "Малюнок скопійовано",
+        "copied_body": "Малюнок скопійовано в буфер обміну",
+        "failed_title": "Помилка експорту",
+        "failed_body": "Не вдалося зберегти малюнок"
+      }
     }
   },
   "screenshot": {

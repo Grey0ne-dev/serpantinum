@@ -926,6 +926,16 @@
         "pomo_skipped_focus_body": "Sessão de foco pulada. Indo para a pausa.",
         "pomo_skipped_break_body": "Pausa pulada. De volta ao foco."
       }
+    },
+    "draw": {
+      "notification": {
+        "app_name": "DrawAction",
+        "saved_title": "Desenho salvo",
+        "copied_title": "Desenho copiado",
+        "copied_body": "Desenho copiado para a área de transferência",
+        "failed_title": "Falha na exportação",
+        "failed_body": "Não foi possível salvar o desenho"
+      }
     }
   },
   "screenshot": {

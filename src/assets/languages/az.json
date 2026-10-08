@@ -920,6 +920,16 @@
         "pomo_skipped_focus_body": "Diqqət seansı ötürüldü. Fasiləyə keçilir.",
         "pomo_skipped_break_body": "Fasilə ötürüldü. Yenidən diqqət seansına keçilir."
       }
+    },
+    "draw": {
+      "notification": {
+        "app_name": "DrawAction",
+        "saved_title": "Drawing saved",
+        "copied_title": "Drawing copied",
+        "copied_body": "Drawing copied to clipboard",
+        "failed_title": "Export failed",
+        "failed_body": "Could not save drawing"
+      }
     }
   },
   "screenshot": {

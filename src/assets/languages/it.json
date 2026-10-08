@@ -925,6 +925,16 @@
         "pomo_skipped_focus_body": "Sessione di concentrazione saltata. Facciamo una pausa.",
         "pomo_skipped_break_body": "Pausa saltata. Ritorniamo a concentrarci."
       }
+    },
+    "draw": {
+      "notification": {
+        "app_name": "DrawAction",
+        "saved_title": "Disegno salvato",
+        "copied_title": "Disegno copiato",
+        "copied_body": "Disegno copiato negli appunti",
+        "failed_title": "Esportazione non riuscita",
+        "failed_body": "Impossibile salvare il disegno"
+      }
     }
   },
   "screenshot": {
