@@ -1858,115 +1858,47 @@ Item {
                                         }
                                     }
 
-                                    Canvas {
+                                    ShaderEffect {
                                         id: lightningCanvas
                                         anchors.fill: parent
                                         opacity: 1.0 - root.eqLightningFade
                                         z: 0
 
-                                        renderTarget: Canvas.FramebufferObject
-
-                                        layer.enabled: true
-                                        layer.effect: MultiEffect {
-                                            shadowEnabled: true
-                                            shadowColor: root.eqAccentColor
-                                            shadowBlur: 1.0
-                                            shadowOpacity: 0.8
-                                            shadowVerticalOffset: 0
-                                            shadowHorizontalOffset: 0
+                                        property real animTime: 0.0
+                                        NumberAnimation on animTime {
+                                            running: root.active
+                                            loops: Animation.Infinite
+                                            from: 0; to: 1000
+                                            duration: 1000000
                                         }
 
-                                        Timer {
-                                            interval: 16
-                                            running: root.active && root.eqLightningFade < 1.0 && root.eqLightningProgress > 0.0
-                                            repeat: true
-                                            onTriggered: lightningCanvas.requestPaint()
-                                        }
+                                        property vector2d itemSize: Qt.vector2d(width, height)
+                                        property real time: animTime
+                                        property real progress: root.eqLightningProgress
+                                        property real fade: root.eqLightningFade
+                                        property real scale: root.s(1.0)
+                                        property color accentColor: root.eqAccentColor
 
-                                        onPaint: {
-                                            if (!root.active) return;
-                                            var ctx = getContext("2d");
-                                            ctx.clearRect(0, 0, width, height);
+                                        property vector4d bands0: Qt.vector4d(
+                                            root.eqData.b1 !== undefined ? Number(root.eqData.b1) : 0,
+                                            root.eqData.b2 !== undefined ? Number(root.eqData.b2) : 0,
+                                            root.eqData.b3 !== undefined ? Number(root.eqData.b3) : 0,
+                                            root.eqData.b4 !== undefined ? Number(root.eqData.b4) : 0
+                                        )
+                                        property vector4d bands1: Qt.vector4d(
+                                            root.eqData.b5 !== undefined ? Number(root.eqData.b5) : 0,
+                                            root.eqData.b6 !== undefined ? Number(root.eqData.b6) : 0,
+                                            root.eqData.b7 !== undefined ? Number(root.eqData.b7) : 0,
+                                            root.eqData.b8 !== undefined ? Number(root.eqData.b8) : 0
+                                        )
+                                        property vector4d bands2: Qt.vector4d(
+                                            root.eqData.b9 !== undefined ? Number(root.eqData.b9) : 0,
+                                            root.eqData.b10 !== undefined ? Number(root.eqData.b10) : 0,
+                                            root.s(10),
+                                            root.s(30)
+                                        )
 
-                                            if (root.eqLightningProgress <= 0.0 || root.eqLightningFade >= 1.0) return;
-
-                                            var time = Date.now() / 1000;
-                                            var maxIdx = root.eqLightningProgress;
-
-                                            ctx.lineJoin = "round";
-                                            ctx.lineCap = "round";
-
-                                            var pts = [];
-                                            for (var i = 1; i <= 10; i++) {
-                                                var val = root.eqData["b" + i] !== undefined ? Number(root.eqData["b" + i]) : 0;
-                                                var norm = 1.0 - ((val + 12) / 24);
-                                                
-                                                var py = root.s(10) + norm * (height - root.s(30));
-                                                var px = (i - 0.5) * (width / 10);
-                                                pts.push({ x: px, y: py });
-                                            }
-
-                                            for (var s = 0; s < 4; s++) {
-                                                ctx.beginPath();
-                                                ctx.moveTo(pts[0].x, pts[0].y);
-
-                                                for (var i = 0; i < pts.length - 1; i++) {
-                                                    if (i > maxIdx) break;
-
-                                                    var p1 = pts[i];
-                                                    var p2 = pts[i+1];
-
-                                                    var fraction = 1.0;
-                                                    if (maxIdx < i + 1) {
-                                                        fraction = maxIdx - i;
-                                                    }
-
-                                                    var steps = s === 3 ? 6 : 8;
-                                                    for (var j = 1; j <= steps; j++) {
-                                                        var t = j / steps;
-                                                        if (t > fraction) t = fraction;
-
-                                                        var cx = p1.x + (p2.x - p1.x) * t;
-                                                        var cy = p1.y + (p2.y - p1.y) * t;
-
-                                                        var envelope = Math.sin(t * Math.PI);
-
-                                                        var noiseAmpX = s === 3 ? 1.0 : (4 - s) * 4;
-                                                        var noiseAmpY = s === 3 ? 1.0 : (4 - s) * 5;
-                                                        
-                                                        var sepWaveX = (s < 2) ? Math.sin(time * 3 + i + j + s) * root.s(9) * envelope : 0;
-                                                        var sepWaveY = (s < 2) ? Math.cos(time * 2.5 + i - j - s) * root.s(13.5) * envelope : 0;
-
-                                                        var noiseX = Math.sin(time * (10+s) + i + j) * Math.cos(time * 8 - i + j) * noiseAmpX * envelope * (1 - root.eqLightningFade);
-                                                        var noiseY = Math.cos(time * (9-s) + i - j) * Math.sin(time * 7 + i - j) * noiseAmpY * envelope * (1 - root.eqLightningFade);
-
-                                                        ctx.lineTo(cx + sepWaveX + noiseX, cy + sepWaveY + noiseY);
-
-                                                        if (t === fraction) break;
-                                                    }
-                                                }
-
-                                                if (s === 0) {
-                                                    ctx.lineWidth = root.s(18);
-                                                    ctx.strokeStyle = root.eqAccentColor;
-                                                    ctx.globalAlpha = 0.35;
-                                                } else if (s === 1) {
-                                                    ctx.lineWidth = root.s(9);
-                                                    ctx.strokeStyle = Qt.lighter(root.eqAccentColor, 1.25);
-                                                    ctx.globalAlpha = 0.65;
-                                                } else if (s === 2) {
-                                                    ctx.lineWidth = root.s(4.5);
-                                                    ctx.strokeStyle = Qt.lighter(root.eqAccentColor, 1.5);
-                                                    ctx.globalAlpha = 0.9;
-                                                } else if (s === 3) {
-                                                    ctx.lineWidth = root.s(2.2);
-                                                    ctx.strokeStyle = "#ffffff";
-                                                    ctx.globalAlpha = 1.0;
-                                                }
-
-                                                ctx.stroke();
-                                            }
-                                        }
+                                        fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/vfx/eq_lightning.frag.qsb"
                                     }
                                 }
 

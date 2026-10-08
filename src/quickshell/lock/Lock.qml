@@ -957,94 +957,24 @@ Scope {
                         }
                     }
 
-                    Canvas {
+                    ShaderEffect {
                         id: wipeCanvas
                         anchors.fill: parent
                         z: 10
-                        renderTarget: Canvas.FramebufferObject
-                        renderStrategy: Canvas.Immediate
-
-                        property real lastPaintedRev: -1
-                        property real cachedS28: screenRoot.s(28)
-
-                        readonly property var wipeColors: [
-                            ThemeBackend.crust.toString(),
-                            ThemeBackend.surface1.toString(),
-                            ThemeBackend.blue.toString(),
-                            ThemeBackend.mauve.toString(),
-                            ThemeBackend.surface0.toString()
-                        ]
-                        readonly property var wipeAmps: [1.5, 1.3, 1.1, 0.9, 0.6]
-                        readonly property var wipeOffsets: [0.0, 0.5, 1.0, 1.5, 2.0]
 
                         opacity: screenRoot.isPlayingIntro ? (screenRoot.panelReveal < 0.8 ? 1.0 : Math.max(0.0, (1.0 - screenRoot.panelReveal) / 0.2)) : 0.0
                         visible: opacity > 0.001
 
-                        Connections {
-                            target: screenRoot
-                            enabled: screenRoot.isPlayingIntro && wipeCanvas.visible
-                            function onPanelRevealChanged() {
-                                if (Math.abs(screenRoot.panelReveal - wipeCanvas.lastPaintedRev) >= 0.005) {
-                                    wipeCanvas.requestPaint();
-                                }
-                            }
-                        }
+                        property vector2d itemSize: Qt.vector2d(width, height)
+                        property real reveal: screenRoot.panelReveal
+                        property real s28: screenRoot.s(28)
+                        property color color0: ThemeBackend.crust
+                        property color color1: ThemeBackend.surface1
+                        property color color2: ThemeBackend.blue
+                        property color color3: ThemeBackend.mauve
+                        property color color4: ThemeBackend.surface0
 
-                        onPaint: {
-                            var rev = screenRoot.panelReveal;
-                            lastPaintedRev = rev;
-                            if (rev <= 0.0) return;
-
-                            var ctx = getContext("2d");
-                            var w = width;
-                            var h = height;
-
-                            var lastFull = -1;
-                            for (var k = 4; k >= 0; k--) {
-                                var p = (rev - (k === 0 ? 0.0 : k * 0.07)) * 1.55;
-                                if (p >= 1.0) {
-                                    lastFull = k;
-                                    break;
-                                }
-                            }
-
-                            if (lastFull >= 0) {
-                                ctx.fillStyle = wipeColors[lastFull];
-                                ctx.fillRect(0, 0, w, h);
-                            } else {
-                                ctx.clearRect(0, 0, w, h);
-                            }
-
-                            var start = lastFull + 1;
-                            if (start >= 5) return;
-
-                            var phase = rev * 7.853981633974483;
-                            var s28 = cachedS28;
-                            var cp1x = w * 0.38;
-                            var cp2x = w * 0.72;
-                            var pi = 3.141592653589793;
-
-                            for (var i = start; i < 5; i++) {
-                                var prog = (rev - (i === 0 ? 0.0 : i * 0.07)) * 1.55;
-                                if (prog <= 0.0) continue;
-
-                                var smoothProg = Math.pow(prog, 1.4);
-                                var currentY = h * smoothProg;
-                                var waveAmp = s28 * Math.sin(smoothProg * pi) * wipeAmps[i];
-
-                                var cp1y = currentY + Math.sin(phase + wipeOffsets[i]) * waveAmp;
-                                var cp2y = currentY + Math.cos(phase + wipeOffsets[i] + pi) * waveAmp;
-
-                                ctx.beginPath();
-                                ctx.moveTo(0, 0);
-                                ctx.lineTo(0, currentY);
-                                ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, w, currentY);
-                                ctx.lineTo(w, 0);
-                                ctx.closePath();
-                                ctx.fillStyle = wipeColors[i];
-                                ctx.fill();
-                            }
-                        }
+                        fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/effects/curtain_wipe.frag.qsb"
                     }
 
                     SequentialAnimation {

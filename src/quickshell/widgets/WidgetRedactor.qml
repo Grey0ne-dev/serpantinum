@@ -775,34 +775,15 @@ Scope {
                         Loader {
                             anchors.fill: parent
                             active: redactorMode.gridEnabled
-                            sourceComponent: Canvas {
-                                id: gridCanvas
+                            sourceComponent: ShaderEffect {
+                                id: gridShader
                                 anchors.fill: parent
+                                property vector2d itemSize: Qt.vector2d(width, height)
                                 property real stepSize: s(20)
+                                property real lineWidth: 1.0
+                                property color lineColor: Qt.rgba(ThemeBackend.text.r, ThemeBackend.text.g, ThemeBackend.text.b, 0.1)
 
-                                Connections {
-                                    target: redactorMode
-                                    function onWidthChanged() { gridCanvas.requestPaint() }
-                                    function onHeightChanged() { gridCanvas.requestPaint() }
-                                }
-
-                                onPaint: {
-                                    var ctx = getContext("2d");
-                                    ctx.clearRect(0, 0, width, height);
-                                    ctx.strokeStyle = Qt.rgba(ThemeBackend.text.r, ThemeBackend.text.g, ThemeBackend.text.b, 0.1);
-                                    ctx.lineWidth = 1;
-                                    ctx.beginPath();
-
-                                    for (let x = 0; x <= width; x += stepSize) {
-                                        ctx.moveTo(x, 0);
-                                        ctx.lineTo(x, height);
-                                    }
-                                    for (let y = 0; y <= height; y += stepSize) {
-                                        ctx.moveTo(0, y);
-                                        ctx.lineTo(width, y);
-                                    }
-                                    ctx.stroke();
-                                }
+                                fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/grid_pattern.frag.qsb"
                             }
                         }
 

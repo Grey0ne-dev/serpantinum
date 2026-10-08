@@ -22,11 +22,11 @@ ShaderEffect {
     readonly property real perimeter: 2 * (width + height - 4 * inset - 4 * radius) + 2 * Math.PI * radius
 
     property color color: (typeof ThemeBackend !== "undefined") ? (ThemeBackend.primary || ThemeBackend.blue || "#89b4fa") : "#89b4fa"
-    property size itemSize: Qt.size(width, height)
+    property vector2d itemSize: Qt.vector2d(width, height)
     property real radius: Math.max(2, Math.min(baseRadius + 4, (width - 2 * inset) / 2, (height - 2 * inset) / 2))
     property real lineWidth: 2
     property real amplitude: 0.9
     property real frequency: perimeter > 0 ? (2 * Math.PI * Math.max(4, Math.round(perimeter / 28))) / perimeter : 0
 
-    fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/widget_outline.frag.qsb"
+    fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/widgets/widget_outline.frag.qsb"
 }

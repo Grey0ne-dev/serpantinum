@@ -82,7 +82,7 @@ Item {
         }
 
         property color waveColor: bar.waveColor
-        property size itemSize: Qt.size(width, height)
+        property vector2d itemSize: Qt.vector2d(width, height)
         property real pad: bar.pad
         property real cy: bar.cy
         property real endX: Math.max(bar.pad, bar.progressX)
@@ -96,7 +96,7 @@ Item {
         property vector4d motion0: Qt.vector4d(1.0, 0.0, 0.0, 0.0)
         property vector4d motion1: Qt.vector4d(2.2, 1.8, Math.PI, 0.0)
 
-        fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/seekbar_wave.frag.qsb"
+        fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/audio/seekbar_wave.frag.qsb"
     }
 
     Rectangle {
