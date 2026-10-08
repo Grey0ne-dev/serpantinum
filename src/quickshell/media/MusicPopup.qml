@@ -1389,7 +1389,6 @@ Item {
 
                             IconButton {
                                 id: playPauseBtn
-                                iconOffsetY: -2
                                 Layout.preferredWidth: root.s(43)
                                 Layout.preferredHeight: root.s(43)
                                 cornerRadius: ThemeBackend.borderRadius
