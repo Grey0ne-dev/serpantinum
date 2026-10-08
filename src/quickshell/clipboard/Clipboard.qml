@@ -609,198 +609,55 @@ PanelWindow {
 
         opacity: (clipboardWindow.isVisible || animProgress > 0.001) ? 1.0 : 0.0
 
-        Shape {
-            visible: clipboardWindow.attachEdge === "top" && container.dynamicCornerRadius > 0.5
-            x: -container.dynamicCornerRadius
-            y: 0
+        ShaderEffect {
+            visible: container.dynamicCornerRadius > 0.5
+            x: {
+                if (clipboardWindow.attachEdge === "left") return 0;
+                if (clipboardWindow.attachEdge === "right") return parent.width - container.dynamicCornerRadius;
+                return -container.dynamicCornerRadius;
+            }
+            y: {
+                if (clipboardWindow.attachEdge === "bottom") return parent.height - container.dynamicCornerRadius;
+                if (clipboardWindow.attachEdge === "left" || clipboardWindow.attachEdge === "right") return -container.dynamicCornerRadius;
+                return 0;
+            }
             width: container.dynamicCornerRadius
             height: container.dynamicCornerRadius
-            preferredRendererType: Shape.CurveRenderer
-            ShapePath {
-                fillColor: ThemeBackend.base
-                strokeColor: "transparent"
-                startX: 0
-                startY: 0
-                PathLine { x: container.dynamicCornerRadius; y: 0 }
-                PathLine { x: container.dynamicCornerRadius; y: container.dynamicCornerRadius }
-                PathArc {
-                    x: 0
-                    y: 0
-                    radiusX: container.dynamicCornerRadius
-                    radiusY: container.dynamicCornerRadius
-                    direction: PathArc.Counterclockwise
-                }
+            property vector2d itemSize: Qt.vector2d(width, height)
+            property real cornerIndex: {
+                if (clipboardWindow.attachEdge === "bottom") return 3.0;
+                if (clipboardWindow.attachEdge === "left") return 2.0;
+                if (clipboardWindow.attachEdge === "right") return 3.0;
+                return 1.0;
             }
+            property color color: ThemeBackend.base
+            fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/corner_cutout.frag.qsb"
         }
 
-        Shape {
-            visible: clipboardWindow.attachEdge === "top" && container.dynamicCornerRadius > 0.5
-            x: parent.width
-            y: 0
+        ShaderEffect {
+            visible: container.dynamicCornerRadius > 0.5
+            x: {
+                if (clipboardWindow.attachEdge === "left") return 0;
+                if (clipboardWindow.attachEdge === "right") return parent.width - container.dynamicCornerRadius;
+                return parent.width;
+            }
+            y: {
+                if (clipboardWindow.attachEdge === "bottom") return parent.height - container.dynamicCornerRadius;
+                if (clipboardWindow.attachEdge === "left" || clipboardWindow.attachEdge === "right") return parent.height;
+                return 0;
+            }
             width: container.dynamicCornerRadius
             height: container.dynamicCornerRadius
-            preferredRendererType: Shape.CurveRenderer
-            ShapePath {
-                fillColor: ThemeBackend.base
-                strokeColor: "transparent"
-                startX: container.dynamicCornerRadius
-                startY: 0
-                PathLine { x: 0; y: 0 }
-                PathLine { x: 0; y: container.dynamicCornerRadius }
-                PathArc {
-                    x: container.dynamicCornerRadius
-                    y: 0
-                    radiusX: container.dynamicCornerRadius
-                    radiusY: container.dynamicCornerRadius
-                    direction: PathArc.Clockwise
-                }
+            property vector2d itemSize: Qt.vector2d(width, height)
+            property real cornerIndex: {
+                if (clipboardWindow.attachEdge === "bottom") return 2.0;
+                if (clipboardWindow.attachEdge === "left") return 0.0;
+                if (clipboardWindow.attachEdge === "right") return 1.0;
+                return 0.0;
             }
+            property color color: ThemeBackend.base
+            fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/corner_cutout.frag.qsb"
         }
-
-        Shape {
-            visible: clipboardWindow.attachEdge === "bottom" && container.dynamicCornerRadius > 0.5
-            x: -container.dynamicCornerRadius
-            y: parent.height - container.dynamicCornerRadius
-            width: container.dynamicCornerRadius
-            height: container.dynamicCornerRadius
-            preferredRendererType: Shape.CurveRenderer
-            ShapePath {
-                fillColor: ThemeBackend.base
-                strokeColor: "transparent"
-                startX: 0
-                startY: container.dynamicCornerRadius
-                PathLine { x: container.dynamicCornerRadius; y: container.dynamicCornerRadius }
-                PathLine { x: container.dynamicCornerRadius; y: 0 }
-                PathArc {
-                    x: 0
-                    y: container.dynamicCornerRadius
-                    radiusX: container.dynamicCornerRadius
-                    radiusY: container.dynamicCornerRadius
-                    direction: PathArc.Clockwise
-                }
-            }
-        }
-
-        Shape {
-            visible: clipboardWindow.attachEdge === "bottom" && container.dynamicCornerRadius > 0.5
-            x: parent.width
-            y: parent.height - container.dynamicCornerRadius
-            width: container.dynamicCornerRadius
-            height: container.dynamicCornerRadius
-            preferredRendererType: Shape.CurveRenderer
-            ShapePath {
-                fillColor: ThemeBackend.base
-                strokeColor: "transparent"
-                startX: container.dynamicCornerRadius
-                startY: container.dynamicCornerRadius
-                PathLine { x: 0; y: container.dynamicCornerRadius }
-                PathLine { x: 0; y: 0 }
-                PathArc {
-                    x: container.dynamicCornerRadius
-                    y: container.dynamicCornerRadius
-                    radiusX: container.dynamicCornerRadius
-                    radiusY: container.dynamicCornerRadius
-                    direction: PathArc.Counterclockwise
-                }
-            }
-        }
-
-        Shape {
-            visible: clipboardWindow.attachEdge === "left" && container.dynamicCornerRadius > 0.5
-            x: 0
-            y: -container.dynamicCornerRadius
-            width: container.dynamicCornerRadius
-            height: container.dynamicCornerRadius
-            preferredRendererType: Shape.CurveRenderer
-            ShapePath {
-                fillColor: ThemeBackend.base
-                strokeColor: "transparent"
-                startX: 0
-                startY: 0
-                PathLine { x: 0; y: container.dynamicCornerRadius }
-                PathLine { x: container.dynamicCornerRadius; y: container.dynamicCornerRadius }
-                PathArc {
-                    x: 0
-                    y: 0
-                    radiusX: container.dynamicCornerRadius
-                    radiusY: container.dynamicCornerRadius
-                    direction: PathArc.Clockwise
-                }
-            }
-        }
-
-        Shape {
-            visible: clipboardWindow.attachEdge === "left" && container.dynamicCornerRadius > 0.5
-            x: 0
-            y: parent.height
-            width: container.dynamicCornerRadius
-            height: container.dynamicCornerRadius
-            preferredRendererType: Shape.CurveRenderer
-            ShapePath {
-                fillColor: ThemeBackend.base
-                strokeColor: "transparent"
-                startX: 0
-                startY: container.dynamicCornerRadius
-                PathLine { x: 0; y: 0 }
-                PathLine { x: container.dynamicCornerRadius; y: 0 }
-                PathArc {
-                    x: 0
-                    y: container.dynamicCornerRadius
-                    radiusX: container.dynamicCornerRadius
-                    radiusY: container.dynamicCornerRadius
-                    direction: PathArc.Counterclockwise
-                }
-            }
-        }
-
-        Shape {
-            visible: clipboardWindow.attachEdge === "right" && container.dynamicCornerRadius > 0.5
-            x: parent.width - container.dynamicCornerRadius
-            y: -container.dynamicCornerRadius
-            width: container.dynamicCornerRadius
-            height: container.dynamicCornerRadius
-            preferredRendererType: Shape.CurveRenderer
-            ShapePath {
-                fillColor: ThemeBackend.base
-                strokeColor: "transparent"
-                startX: container.dynamicCornerRadius
-                startY: 0
-                PathLine { x: container.dynamicCornerRadius; y: container.dynamicCornerRadius }
-                PathLine { x: 0; y: container.dynamicCornerRadius }
-                PathArc {
-                    x: container.dynamicCornerRadius
-                    y: 0
-                    radiusX: container.dynamicCornerRadius
-                    radiusY: container.dynamicCornerRadius
-                    direction: PathArc.Counterclockwise
-                }
-            }
-        }
-
-        Shape {
-            visible: clipboardWindow.attachEdge === "right" && container.dynamicCornerRadius > 0.5
-            x: parent.width - container.dynamicCornerRadius
-            y: parent.height
-            width: container.dynamicCornerRadius
-            height: container.dynamicCornerRadius
-            preferredRendererType: Shape.CurveRenderer
-            ShapePath {
-                fillColor: ThemeBackend.base
-                strokeColor: "transparent"
-                startX: container.dynamicCornerRadius
-                startY: container.dynamicCornerRadius
-                PathLine { x: container.dynamicCornerRadius; y: 0 }
-                PathLine { x: 0; y: 0 }
-                PathArc {
-                    x: container.dynamicCornerRadius
-                    y: container.dynamicCornerRadius
-                    radiusX: container.dynamicCornerRadius
-                    radiusY: container.dynamicCornerRadius
-                    direction: PathArc.Clockwise
-                }
-            }
-        }
-
         Rectangle {
             id: bgCard
             anchors.fill: parent

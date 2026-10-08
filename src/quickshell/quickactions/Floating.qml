@@ -1084,56 +1084,29 @@ Variants {
                         }
                     }
 
-                    Shape {
+                    ShaderEffect {
                         visible: floatingWidget.outerCornerRadius > 0.5
-                        x: -floatingWidget.edgeBleed
+                        x: 0
                         y: -floatingWidget.outerCornerRadius
-                        width: floatingWidget.outerCornerRadius + floatingWidget.edgeBleed
+                        width: floatingWidget.outerCornerRadius
                         height: floatingWidget.outerCornerRadius
-                        preferredRendererType: Shape.CurveRenderer
-                        ShapePath {
-                            fillColor: Qt.rgba(ThemeBackend.base.r, ThemeBackend.base.g, ThemeBackend.base.b, 0.95)
-                            strokeColor: "transparent"
-                            startX: 0
-                            startY: 0
-                            PathLine { x: 0; y: floatingWidget.outerCornerRadius }
-                            PathLine { x: floatingWidget.edgeBleed + floatingWidget.outerCornerRadius; y: floatingWidget.outerCornerRadius }
-                            PathArc {
-                                x: floatingWidget.edgeBleed
-                                y: 0
-                                radiusX: floatingWidget.outerCornerRadius
-                                radiusY: floatingWidget.outerCornerRadius
-                                direction: PathArc.Clockwise
-                            }
-                            PathLine { x: 0; y: 0 }
-                        }
+                        property vector2d itemSize: Qt.vector2d(width, height)
+                        property real cornerIndex: 2.0
+                        property color color: Qt.rgba(ThemeBackend.base.r, ThemeBackend.base.g, ThemeBackend.base.b, 0.95)
+                        fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/corner_cutout.frag.qsb"
                     }
 
-                    Shape {
+                    ShaderEffect {
                         visible: floatingWidget.outerCornerRadius > 0.5
-                        x: -floatingWidget.edgeBleed
+                        x: 0
                         y: parent.height
-                        width: floatingWidget.outerCornerRadius + floatingWidget.edgeBleed
+                        width: floatingWidget.outerCornerRadius
                         height: floatingWidget.outerCornerRadius
-                        preferredRendererType: Shape.CurveRenderer
-                        ShapePath {
-                            fillColor: Qt.rgba(ThemeBackend.base.r, ThemeBackend.base.g, ThemeBackend.base.b, 0.95)
-                            strokeColor: "transparent"
-                            startX: 0
-                            startY: floatingWidget.outerCornerRadius
-                            PathLine { x: 0; y: 0 }
-                            PathLine { x: floatingWidget.edgeBleed + floatingWidget.outerCornerRadius; y: 0 }
-                            PathArc {
-                                x: floatingWidget.edgeBleed
-                                y: floatingWidget.outerCornerRadius
-                                radiusX: floatingWidget.outerCornerRadius
-                                radiusY: floatingWidget.outerCornerRadius
-                                direction: PathArc.Counterclockwise
-                            }
-                            PathLine { x: 0; y: floatingWidget.outerCornerRadius }
-                        }
+                        property vector2d itemSize: Qt.vector2d(width, height)
+                        property real cornerIndex: 0.0
+                        property color color: Qt.rgba(ThemeBackend.base.r, ThemeBackend.base.g, ThemeBackend.base.b, 0.95)
+                        fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/ui/corner_cutout.frag.qsb"
                     }
-
                     Rectangle {
                         id: morphingBackground
                         x: -floatingWidget.edgeBleed
