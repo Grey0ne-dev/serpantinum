@@ -11,6 +11,7 @@ import "../reusables/buttons"
 
 Item {
     id: root
+    visible: false
     focus: true
 
     readonly property bool isGuidePopup: true

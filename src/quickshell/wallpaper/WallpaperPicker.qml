@@ -11,6 +11,7 @@ import "../reusables"
 
 Item {
     id: window
+    visible: false
     width: Screen.width
     focus: true
 

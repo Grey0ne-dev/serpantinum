@@ -341,7 +341,10 @@ PanelWindow {
         }
 
         let item = comp.createObject(preloaderContainer);
-        if (item) widgetCache[name] = item;
+        if (item) {
+            item.visible = false;
+            widgetCache[name] = item;
+        }
         return item;
     }
 
@@ -508,7 +511,14 @@ PanelWindow {
     }
 
     onIsVisibleChanged: {
-        if (isVisible) widgetStack.forceActiveFocus();
+        if (isVisible) {
+            widgetStack.forceActiveFocus();
+        } else if (currentActive === "hidden" && !delayedClear.running) {
+            for (let k in widgetCache) {
+                let it = widgetCache[k];
+                if (it) it.visible = false;
+            }
+        }
     }
 
     Item {
@@ -715,6 +725,14 @@ PanelWindow {
             widgetStack.replace(cachedItem, {}, StackView.Immediate);
         }
 
+        for (let k in widgetCache) {
+            let it = widgetCache[k];
+            if (it && it !== cachedItem) {
+                it.visible = false;
+            }
+        }
+        cachedItem.visible = true;
+
         masterWindow.isVisible = true;
 
         if (isComingFromHidden) {
@@ -733,6 +751,10 @@ PanelWindow {
         onTriggered: {
             if (masterWindow.currentActive === "hidden" && scheduledGeneration === masterWindow.switchGeneration) {
                 masterWindow.disableMorph = true;
+                for (let k in widgetCache) {
+                    let it = widgetCache[k];
+                    if (it) it.visible = false;
+                }
             }
         }
     }
