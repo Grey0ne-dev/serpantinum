@@ -1044,7 +1044,7 @@ Scope {
                                 scale: (screenRoot.inputActive || screenRoot.centerReveal > 0.02) ? 0.92 : 1.0
                                 visible: opacity > 0.01
 
-                                property var currentTime: new Date()
+                                property var currentTime: (typeof DateTime !== "undefined" && DateTime.now) ? DateTime.now : new Date()
                                 property string timeFormat: {
                                     if (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar && Config.rawSettings.bar.time && Config.rawSettings.bar.time.format !== undefined) {
                                         return Config.rawSettings.bar.time.format;
@@ -1183,11 +1183,11 @@ Scope {
                                 }
 
                                 function updateClock() {
-                                    clockModule.currentTime = new Date();
+                                    clockModule.currentTime = (typeof DateTime !== "undefined" && DateTime.now) ? DateTime.now : new Date();
                                     let sec = clockModule.currentTime.getSeconds();
                                     let ms = clockModule.currentTime.getMilliseconds();
                                     let msToNextMinute = ((60 - sec) * 1000) - ms;
-                                    clockTimer.interval = Math.max(500, msToNextMinute);
+                                    clockTimer.interval = Math.max(500, msToNextMinute + 50);
                                 }
 
                                 Timer {
@@ -1197,6 +1197,13 @@ Scope {
                                     repeat: true
                                     onTriggered: {
                                         clockModule.updateClock();
+                                    }
+                                }
+
+                                Connections {
+                                    target: typeof DateTime !== "undefined" ? DateTime : null
+                                    function onNowChanged() {
+                                        clockModule.currentTime = DateTime.now;
                                     }
                                 }
                             }
