@@ -1,3 +1,21 @@
+### 2.2.5-1
+
+- fix: ensure i18n translation readiness before notification dispatch
+- fix: resolve missing isCharging property and wave animation scope in battery faces
+- fix: manage popup visibility lifecycle to eliminate background render loops
+- perf: replace bar battery pill 2D canvas with FluidWave shader
+- perf: eliminate redundant shell process forks on startup and settings reload
+- fix: remove redundant pause logic on volume wave animation
+- perf: pause volume wave animation and unpause on hover
+- fix: eliminate lumen clock periodic stall with continuous sweep tracking
+- perf: pause system usage and battery waves in idle and animate on value change
+- perf: throttle keyboard lock polling fallback and fix watcher path
+- perf: eliminate sys_fetcher blocking sleep and optimize sensor parsing
+- perf: implement lazy instantiation on first open for popup widgets
+- perf: optimize lumen clock with smooth sweep animation and visibility guard
+- refactor: replace Shape corners with corner_cutout shader in SideMusicPopout
+- refactor: replace figure-stacked Shape corners with corner_cutout shader across popouts and overlays
+
 ### 2.2.5
 
 - fix(bar): preserve module text opacity when adjusting bar opacity
