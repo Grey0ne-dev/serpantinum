@@ -444,10 +444,12 @@
           "desc": "Batareya göstəricisinin vizual görünüşünü seçin",
           "name": {
             "classic": "Klassik",
-            "minimal": "Minimal"
+            "minimal": "Minimal",
+            "text": "Mətn"
           },
           "classic": "Qradiyent dalğalı kapsul",
-          "minimal": "iOS/Android tərzində qapaqlı kapsul"
+          "minimal": "iOS/Android tərzində qapaqlı kapsul",
+          "text": "Arxa plansız sadə mətn və ikon"
         }
       },
       "wifi": {

@@ -446,10 +446,12 @@
           "desc": "Escolha a aparência visual do indicador de bateria",
           "name": {
             "classic": "Clássico",
-            "minimal": "Minimalista"
+            "minimal": "Minimalista",
+            "text": "Texto"
           },
           "classic": "Pílula com onda gradiente",
-          "minimal": "Cápsula estilo iOS/Android com tampa"
+          "minimal": "Cápsula estilo iOS/Android com tampa",
+          "text": "Texto e ícone limpos sem fundo"
         }
       },
       "wifi": {

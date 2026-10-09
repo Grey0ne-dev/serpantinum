@@ -104,11 +104,11 @@ Item {
         to: Math.PI * 2
         duration: root.isCharging ? 1200 : 2200
         loops: Animation.Infinite
-        running: root.visible && (!root.isDesktop) && (typeof batBtn !== "undefined" && batBtn ? (batBtn.fillRatio > 0.0 && batBtn.fillRatio < 1.0) : false) && root.isCharging
+        running: root.visible && (!root.isDesktop) && root.batStyle !== "text" && (typeof batBtn !== "undefined" && batBtn ? (batBtn.fillRatio > 0.0 && batBtn.fillRatio < 1.0) : false) && root.isCharging
     }
 
     onIsChargingChanged: {
-        if (isCharging && visible && !isDesktop && typeof batBtn !== "undefined" && batBtn && batBtn.fillRatio > 0.0 && batBtn.fillRatio < 1.0) {
+        if (isCharging && visible && !isDesktop && root.batStyle !== "text" && typeof batBtn !== "undefined" && batBtn && batBtn.fillRatio > 0.0 && batBtn.fillRatio < 1.0) {
             waveSettleTimer.stop();
             waveAnimation.start();
         } else if (!isCharging) {
@@ -120,7 +120,7 @@ Item {
         if (!visible) {
             waveAnimation.stop();
             waveSettleTimer.stop();
-        } else if (isCharging && !isDesktop && typeof batBtn !== "undefined" && batBtn && batBtn.fillRatio > 0.0 && batBtn.fillRatio < 1.0) {
+        } else if (isCharging && !isDesktop && root.batStyle !== "text" && typeof batBtn !== "undefined" && batBtn && batBtn.fillRatio > 0.0 && batBtn.fillRatio < 1.0) {
             waveAnimation.start();
         }
     }
@@ -149,7 +149,13 @@ Item {
         return ThemeBackend.subtext0;
     }
 
-    property real targetHeight: ((!module || module.moduleActive) && sysSideLayout.implicitHeight > 0) ? (sysSideLayout.implicitHeight + (isPreview ? 0 : s(isCompact ? 8 : 10))) : 0
+    property real targetHeight: {
+        if (module && !module.moduleActive) return 0;
+        if (root.batStyle === "text") {
+            return (sideTextCol.implicitHeight > 0) ? (sideTextCol.implicitHeight + (isPreview ? 0 : s(isCompact ? 14 : 16))) : 0;
+        }
+        return (sysSideLayout.implicitHeight > 0) ? (sysSideLayout.implicitHeight + (isPreview ? 0 : s(isCompact ? 8 : 10))) : 0;
+    }
     property bool isFaceVisible: showLayout && targetHeight > 0
 
     implicitHeight: targetHeight
@@ -166,8 +172,48 @@ Item {
         Behavior on y { NumberAnimation { duration: 800; easing.type: Easing.OutQuint } }
     }
 
+    MouseArea {
+        id: sideTextMouseArea
+        anchors.fill: parent
+        hoverEnabled: true
+        cursorShape: Qt.PointingHandCursor
+        enabled: root.batStyle === "text" && !root.isPreview
+        onClicked: Quickshell.execDetached(["bash", "-c", Caching.serpantinumDir + "/scripts/qs_manager.sh toggle system"])
+    }
+
+    Column {
+        id: sideTextCol
+        visible: root.batStyle === "text"
+        anchors.centerIn: parent
+        spacing: s(root.isCompact ? 2 : 3)
+        opacity: root.showLayout ? 1.0 : 0.0
+        Behavior on opacity { NumberAnimation { duration: 450; easing.type: Easing.OutCubic } }
+
+        Text {
+            visible: root.effectiveShowIcon
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: root.batIcon
+            font.family: ThemeBackend.fontFamily
+            font.pixelSize: root.isDesktop ? s(root.isCompact ? 15 : 16) : s(root.isCompact ? 13 : 14)
+            color: sideTextMouseArea.containsMouse ? Qt.lighter(root.batDynamicColor, 1.15) : root.batDynamicColor
+            Behavior on color { ColorAnimation { duration: 150 } }
+        }
+
+        Text {
+            visible: !root.isDesktop && root.effectiveShowPercent
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: root.batPercent
+            font.family: ThemeBackend.fontFamily
+            font.pixelSize: s(root.isCompact ? 9 : 10)
+            font.bold: true
+            color: sideTextMouseArea.containsMouse ? Qt.lighter(ThemeBackend.text, 1.15) : ThemeBackend.text
+            Behavior on color { ColorAnimation { duration: 150 } }
+        }
+    }
+
     Column {
         id: sysSideLayout
+        visible: root.batStyle !== "text"
         anchors.centerIn: parent
         spacing: 0
 

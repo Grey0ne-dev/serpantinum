@@ -446,10 +446,12 @@
           "desc": "배터리 표시기의 시각적 모양을 선택합니다",
           "name": {
             "classic": "클래식",
-            "minimal": "미니멀"
+            "minimal": "미니멀",
+            "text": "텍스트"
           },
           "classic": "그라디언트 웨이브 알약 스타일",
-          "minimal": "캡이 있는 iOS/Android 캡슐 스타일"
+          "minimal": "캡이 있는 iOS/Android 캡슐 스타일",
+          "text": "배경 없는 깔끔한 텍스트 및 아이콘"
         }
       },
       "wifi": {

@@ -106,11 +106,11 @@ Item {
         to: Math.PI * 2
         duration: root.isCharging ? 1200 : 2200
         loops: Animation.Infinite
-        running: root.visible && (!root.isDesktop) && (typeof batPill !== "undefined" && batPill ? (batPill.fillRatio > 0.0 && batPill.fillRatio < 1.0) : false) && root.isCharging
+        running: root.visible && (!root.isDesktop) && root.batStyle !== "text" && (typeof batPill !== "undefined" && batPill ? (batPill.fillRatio > 0.0 && batPill.fillRatio < 1.0) : false) && root.isCharging
     }
 
     onIsChargingChanged: {
-        if (isCharging && visible && !isDesktop && typeof batPill !== "undefined" && batPill && batPill.fillRatio > 0.0 && batPill.fillRatio < 1.0) {
+        if (isCharging && visible && !isDesktop && root.batStyle !== "text" && typeof batPill !== "undefined" && batPill && batPill.fillRatio > 0.0 && batPill.fillRatio < 1.0) {
             waveSettleTimer.stop();
             waveAnimation.start();
         } else if (!isCharging) {
@@ -122,7 +122,7 @@ Item {
         if (!visible) {
             waveAnimation.stop();
             waveSettleTimer.stop();
-        } else if (isCharging && !isDesktop && typeof batPill !== "undefined" && batPill && batPill.fillRatio > 0.0 && batPill.fillRatio < 1.0) {
+        } else if (isCharging && !isDesktop && root.batStyle !== "text" && typeof batPill !== "undefined" && batPill && batPill.fillRatio > 0.0 && batPill.fillRatio < 1.0) {
             waveAnimation.start();
         }
     }
@@ -154,7 +154,13 @@ Item {
     property bool showLayout: (!barWindow || isPreview) ? true : false
     property alias batPill: batPill
 
-    property real targetWidth: ((!module || module.moduleActive) && sysLayout.implicitWidth > 0) ? (sysLayout.implicitWidth + (isPreview ? 0 : s(isCompact ? 8 : 10))) : 0
+    property real targetWidth: {
+        if (module && !module.moduleActive) return 0;
+        if (root.batStyle === "text") {
+            return (textRow.implicitWidth > 0) ? (textRow.implicitWidth + (isPreview ? 0 : s(isCompact ? 16 : 20))) : 0;
+        }
+        return (sysLayout.implicitWidth > 0) ? (sysLayout.implicitWidth + (isPreview ? 0 : s(isCompact ? 8 : 10))) : 0;
+    }
     property bool isFaceVisible: showLayout && targetWidth > 0
 
     implicitWidth: targetWidth
@@ -171,8 +177,48 @@ Item {
         Behavior on x { NumberAnimation { duration: 800; easing.type: Easing.OutQuint } }
     }
 
+    MouseArea {
+        id: textMouseArea
+        anchors.fill: parent
+        hoverEnabled: true
+        cursorShape: Qt.PointingHandCursor
+        enabled: root.batStyle === "text" && !root.isPreview
+        onClicked: Quickshell.execDetached(["bash", "-c", Caching.serpantinumDir + "/scripts/qs_manager.sh toggle system"])
+    }
+
+    Row {
+        id: textRow
+        visible: root.batStyle === "text"
+        anchors.centerIn: parent
+        spacing: root.isDesktop ? 0 : s(root.isCompact ? 5 : 6)
+        opacity: root.showLayout ? 1.0 : 0.0
+        Behavior on opacity { NumberAnimation { duration: 450; easing.type: Easing.OutCubic } }
+
+        Text {
+            visible: root.effectiveShowIcon
+            text: root.batIcon
+            font.family: ThemeBackend.fontFamily
+            font.pixelSize: root.isDesktop ? s(root.isCompact ? 15 : 16) : s(root.isCompact ? 13 : 14.5)
+            color: textMouseArea.containsMouse ? Qt.lighter(root.batDynamicColor, 1.15) : root.batDynamicColor
+            anchors.verticalCenter: parent.verticalCenter
+            Behavior on color { ColorAnimation { duration: 150 } }
+        }
+
+        Text {
+            visible: !root.isDesktop && root.effectiveShowPercent
+            text: root.batPercent
+            font.family: ThemeBackend.fontFamily
+            font.pixelSize: s(root.isCompact ? 11 : 12.6)
+            font.bold: true
+            color: textMouseArea.containsMouse ? Qt.lighter(ThemeBackend.text, 1.15) : ThemeBackend.text
+            anchors.verticalCenter: parent.verticalCenter
+            Behavior on color { ColorAnimation { duration: 150 } }
+        }
+    }
+
     Row {
         id: sysLayout
+        visible: root.batStyle !== "text"
         anchors.centerIn: parent
         spacing: 0
         property int pillHeight: s(root.isCompact ? 28 : 30)

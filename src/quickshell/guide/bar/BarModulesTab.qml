@@ -1916,7 +1916,7 @@ Item {
                         id: batStyleRow
                         rootObj: barModulesRoot.rootObj
                         settingId: "bar_bat_style"
-                        searchKeywords: "battery style look visual classic minimal ios android capsule"
+                        searchKeywords: "battery style look visual classic minimal text ios android capsule"
                         baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
                         icon: "󰂄"
                         title: I18n.t("guide.bar.bat.style.title", "Battery Style")

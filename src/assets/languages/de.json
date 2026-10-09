@@ -447,10 +447,12 @@
           "desc": "Wählen Sie das visuelle Design der Batterieanzeige",
           "name": {
             "classic": "Klassisch",
-            "minimal": "Minimal"
+            "minimal": "Minimal",
+            "text": "Text"
           },
           "classic": "Pille mit Farbverlaufswelle",
-          "minimal": "iOS/Android-Kapsel mit Kappe"
+          "minimal": "iOS/Android-Kapsel mit Kappe",
+          "text": "Kompakter Text und Symbol ohne Hintergrund"
         }
       },
       "wifi": {

@@ -269,6 +269,14 @@ QtObject {
                     icon: "󰂄",
                     horizontalFace: "faces/bat/BatFace.qml",
                     verticalFace: "faces/bat/SideBatFace.qml"
+                },
+                "text": {
+                    id: "text",
+                    name: typeof I18n !== "undefined" ? I18n.t("guide.bar.bat.style.name.text", "Text") : "Text",
+                    desc: typeof I18n !== "undefined" ? I18n.t("guide.bar.bat.style.text", "Clean text and icon without background") : "Clean text and icon without background",
+                    icon: "󰁹",
+                    horizontalFace: "faces/bat/BatFace.qml",
+                    verticalFace: "faces/bat/SideBatFace.qml"
                 }
             }
         }

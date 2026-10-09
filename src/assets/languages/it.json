@@ -445,10 +445,12 @@
           "desc": "Scegli l'aspetto visivo dell'indicatore della batteria",
           "name": {
             "classic": "Classico",
-            "minimal": "Minimale"
+            "minimal": "Minimale",
+            "text": "Testo"
           },
           "classic": "Pillola con onda a gradiente",
-          "minimal": "Capsula in stile iOS/Android con cappuccio"
+          "minimal": "Capsula in stile iOS/Android con cappuccio",
+          "text": "Testo e icona puliti senza sfondo"
         }
       },
       "wifi": {

@@ -447,10 +447,12 @@
           "desc": "Elige la apariencia visual del indicador de batería",
           "name": {
             "classic": "Clásico",
-            "minimal": "Minimalista"
+            "minimal": "Minimalista",
+            "text": "Texto"
           },
           "classic": "Píldora con onda de degradado",
-          "minimal": "Cápsula tipo iOS/Android con tapa"
+          "minimal": "Cápsula tipo iOS/Android con tapa",
+          "text": "Texto e icono limpios sin fondo"
         }
       },
       "wifi": {

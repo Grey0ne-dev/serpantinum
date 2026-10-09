@@ -446,10 +446,12 @@
           "desc": "Chọn giao diện hiển thị của chỉ báo pin",
           "name": {
             "classic": "Cổ điển",
-            "minimal": "Tối giản"
+            "minimal": "Tối giản",
+            "text": "Văn bản"
           },
           "classic": "Dạng viên thuốc với sóng chuyển màu",
-          "minimal": "Dạng thỏi iOS/Android có nắp"
+          "minimal": "Dạng thỏi iOS/Android có nắp",
+          "text": "Biểu tượng và văn bản không có nền"
         }
       },
       "wifi": {

@@ -446,10 +446,12 @@
           "desc": "Choose the visual appearance of the battery indicator",
           "name": {
             "classic": "Classic",
-            "minimal": "Minimal"
+            "minimal": "Minimal",
+            "text": "Text"
           },
           "classic": "Pill with gradient wave fill",
-          "minimal": "iOS/Android capsule with cap"
+          "minimal": "iOS/Android capsule with cap",
+          "text": "Clean text and icon without background"
         }
       },
       "wifi": {
