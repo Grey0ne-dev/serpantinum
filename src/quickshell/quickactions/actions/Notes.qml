@@ -717,6 +717,7 @@ Item {
                                             preventStealing = true;
                                             root.editingNoteId = modelData.id;
                                             root.editingUpdatedAt = modelData.updatedAt || Date.now();
+                                            root.editingNotePinned = Boolean(modelData.pinned);
                                             nameInput.text = modelData.title || "";
                                             contentInput.text = modelData.content || "";
                                             root.isMarkdownPreview = false;
@@ -813,247 +814,267 @@ Item {
                 scale: 0.96 + 0.04 * root.expandProgress
                 transform: Translate { y: root.s(25) * (1.0 - root.expandProgress) }
 
-                Item {
-                    id: editorHeaderBar
-                    anchors.top: parent.top
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    height: root.s(44)
+                Rectangle {
+                    id: editorCard
+                    anchors.fill: parent
+                    anchors.margins: root.s(8)
+                    color: ThemeBackend.surface1
+                    radius: ThemeBackend.borderRadius
+                    clip: true
 
-                    RowLayout {
+                    ColumnLayout {
                         anchors.fill: parent
-                        anchors.leftMargin: root.s(10)
-                        anchors.rightMargin: root.s(10)
+                        anchors.margins: root.s(8)
                         spacing: root.s(8)
 
-                        IconButton {
-                            size: root.s(32)
-                            cornerRadius: root.s(8)
-                            iconFont: root.nerdFont
-                            iconFontSize: root.s(15)
-                            buttonIcon: "󰅖"
-                            textColor: ThemeBackend.text
-                            accentColor: ThemeBackend.surface0
-                            Layout.alignment: Qt.AlignVCenter
-                            onClicked: root.saveCurrentNote()
-                        }
-
-                        ColumnLayout {
+                        Item {
+                            id: editorHeaderBar
                             Layout.fillWidth: true
-                            Layout.alignment: Qt.AlignVCenter
-                            spacing: root.s(1)
+                            Layout.preferredHeight: root.s(32)
 
-                            Text {
-                                text: root.isMarkdownPreview ? I18n.t("quickactions.notes.preview_note") : I18n.t("quickactions.notes.edit_note")
-                                color: ThemeBackend.text
-                                font.family: ThemeBackend.fontFamily
-                                font.pixelSize: root.s(13)
-                                font.bold: true
-                                Layout.fillWidth: true
-                                elide: Text.ElideRight
+                            RowLayout {
+                                anchors.fill: parent
+                                spacing: root.s(8)
+
+                                IconButton {
+                                    id: closeBtn
+                                    size: root.s(32)
+                                    cornerRadius: root.s(8)
+                                    iconFont: root.nerdFont
+                                    iconFontSize: root.s(15)
+                                    buttonIcon: "󰅖"
+                                    textColor: ThemeBackend.text
+                                    accentColor: ThemeBackend.surface2
+                                    Layout.alignment: Qt.AlignVCenter
+                                    onClicked: root.saveCurrentNote()
+                                }
+
+                                ColumnLayout {
+                                    id: headerTitleCol
+                                    Layout.fillWidth: true
+                                    Layout.alignment: Qt.AlignVCenter
+                                    spacing: 0
+
+                                    Text {
+                                        text: root.isMarkdownPreview ? I18n.t("quickactions.notes.preview_note") : I18n.t("quickactions.notes.edit_note")
+                                        color: ThemeBackend.text
+                                        font.family: ThemeBackend.fontFamily
+                                        font.pixelSize: root.s(12.5)
+                                        font.bold: true
+                                        Layout.fillWidth: true
+                                        elide: Text.ElideRight
+                                    }
+
+                                    Text {
+                                        text: root.formatPreciseTime(root.editingUpdatedAt)
+                                        color: ThemeBackend.subtext0
+                                        font.family: ThemeBackend.fontFamily
+                                        font.pixelSize: root.s(9.5)
+                                        Layout.fillWidth: true
+                                        elide: Text.ElideRight
+                                    }
+                                }
+
+                                IconButton {
+                                    id: pinBtn
+                                    size: root.s(32)
+                                    cornerRadius: root.s(8)
+                                    iconFont: root.nerdFont
+                                    iconFontSize: root.s(15)
+                                    buttonIcon: "󰐃"
+                                    textColor: root.editingNotePinned ? ThemeBackend.mauve : ThemeBackend.subtext0
+                                    accentColor: root.editingNotePinned ? root.alpha(ThemeBackend.mauve, 0.2) : ThemeBackend.surface2
+                                    Layout.alignment: Qt.AlignVCenter
+                                    onClicked: root.editingNotePinned = !root.editingNotePinned
+                                }
+
+                                IconButton {
+                                    id: markdownPreviewBtn
+                                    size: root.s(32)
+                                    cornerRadius: root.s(8)
+                                    iconFont: root.nerdFont
+                                    iconFontSize: root.s(15)
+                                    buttonIcon: root.isMarkdownPreview ? "󰈙" : "󰂺"
+                                    textColor: root.isMarkdownPreview ? ThemeBackend.mauve : ThemeBackend.subtext0
+                                    accentColor: root.isMarkdownPreview ? root.alpha(ThemeBackend.mauve, 0.2) : ThemeBackend.surface2
+                                    Layout.alignment: Qt.AlignVCenter
+                                    onClicked: root.isMarkdownPreview = !root.isMarkdownPreview
+                                }
+
+                                ClickButton {
+                                    id: saveBtn
+                                    buttonText: I18n.t("quickactions.notes.save")
+                                    buttonIcon: "󰄬"
+                                    iconFont: root.nerdFont
+                                    iconFontSize: root.s(13)
+                                    textFontSize: root.s(12)
+                                    accentColor: ThemeBackend.mauve
+                                    textColor: ThemeBackend.base
+                                    cornerRadius: root.s(8)
+                                    implicitHeight: root.s(32)
+                                    Layout.alignment: Qt.AlignVCenter
+                                    onClicked: root.saveCurrentNote()
+                                }
                             }
 
-                            Text {
-                                text: root.formatPreciseTime(root.editingUpdatedAt)
-                                color: ThemeBackend.subtext0
-                                font.family: ThemeBackend.fontFamily
-                                font.pixelSize: root.s(10)
-                                Layout.fillWidth: true
-                                elide: Text.ElideRight
-                            }
-                        }
+                            MouseArea {
+                                id: headerDragArea
+                                anchors.left: closeBtn.right
+                                anchors.right: pinBtn.left
+                                anchors.top: parent.top
+                                anchors.bottom: parent.bottom
+                                anchors.leftMargin: root.s(6)
+                                anchors.rightMargin: root.s(6)
+                                hoverEnabled: true
 
-                        IconButton {
-                            size: root.s(32)
-                            cornerRadius: root.s(8)
-                            iconFont: root.nerdFont
-                            iconFontSize: root.s(15)
-                            buttonIcon: root.isMarkdownPreview ? "󰈙" : "󰂺"
-                            textColor: root.isMarkdownPreview ? ThemeBackend.mauve : ThemeBackend.subtext0
-                            accentColor: root.isMarkdownPreview ? root.alpha(ThemeBackend.mauve, 0.2) : ThemeBackend.surface0
-                            Layout.alignment: Qt.AlignVCenter
-                            onClicked: root.isMarkdownPreview = !root.isMarkdownPreview
-                        }
+                                property real startY: 0
+                                property bool draggingV: false
 
-                        ClickButton {
-                            buttonText: I18n.t("quickactions.notes.save")
-                            buttonIcon: "󰄬"
-                            iconFont: root.nerdFont
-                            iconFontSize: root.s(13)
-                            textFontSize: root.s(12)
-                            accentColor: ThemeBackend.mauve
-                            textColor: ThemeBackend.base
-                            cornerRadius: root.s(8)
-                            implicitHeight: root.s(32)
-                            Layout.alignment: Qt.AlignVCenter
-                            onClicked: root.saveCurrentNote()
-                        }
-                    }
+                                onPressed: mouse => {
+                                    startY = mouse.y;
+                                    draggingV = false;
+                                    root.isDraggingV = false;
+                                }
 
-                    MouseArea {
-                        id: headerDragArea
-                        anchors.fill: parent
-                        anchors.leftMargin: root.s(45)
-                        anchors.rightMargin: root.s(85)
-                        hoverEnabled: true
+                                onPositionChanged: mouse => {
+                                    if (!pressed) return;
+                                    let dy = mouse.y - startY;
+                                    if (!draggingV && dy > root.s(6)) {
+                                        draggingV = true;
+                                        root.isDraggingV = true;
+                                        preventStealing = true;
+                                    }
+                                    if (draggingV) {
+                                        let prog = Math.max(0.0, Math.min(1.0, 1.0 - (dy / root.s(90))));
+                                        root.expandProgress = prog;
+                                    }
+                                }
 
-                        property real startY: 0
-                        property bool draggingV: false
+                                onReleased: {
+                                    preventStealing = false;
+                                    if (draggingV) {
+                                        root.isDraggingV = false;
+                                        draggingV = false;
+                                        if (root.expandProgress < 0.65) {
+                                            root.saveCurrentNote();
+                                        } else {
+                                            root.expandProgress = 1.0;
+                                        }
+                                    }
+                                }
 
-                        onPressed: mouse => {
-                            startY = mouse.y;
-                            draggingV = false;
-                            root.isDraggingV = false;
-                        }
-
-                        onPositionChanged: mouse => {
-                            if (!pressed) return;
-                            let dy = mouse.y - startY;
-                            if (!draggingV && dy > root.s(6)) {
-                                draggingV = true;
-                                root.isDraggingV = true;
-                                preventStealing = true;
-                            }
-                            if (draggingV) {
-                                let prog = Math.max(0.0, Math.min(1.0, 1.0 - (dy / root.s(90))));
-                                root.expandProgress = prog;
-                            }
-                        }
-
-                        onReleased: {
-                            preventStealing = false;
-                            if (draggingV) {
-                                root.isDraggingV = false;
-                                draggingV = false;
-                                if (root.expandProgress < 0.65) {
-                                    root.saveCurrentNote();
-                                } else {
-                                    root.expandProgress = 1.0;
+                                onCanceled: {
+                                    preventStealing = false;
+                                    if (draggingV) {
+                                        root.isDraggingV = false;
+                                        draggingV = false;
+                                        if (root.expandProgress < 0.65) {
+                                            root.saveCurrentNote();
+                                        } else {
+                                            root.expandProgress = 1.0;
+                                        }
+                                    }
                                 }
                             }
                         }
 
-                        onCanceled: {
-                            preventStealing = false;
-                            if (draggingV) {
-                                root.isDraggingV = false;
-                                draggingV = false;
-                                if (root.expandProgress < 0.65) {
-                                    root.saveCurrentNote();
-                                } else {
-                                    root.expandProgress = 1.0;
-                                }
-                            }
-                        }
-                    }
-                }
+                        Item {
+                            id: noteNameWrapper
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: root.s(34)
 
-                Item {
-                    id: editorContent
-                    anchors.top: editorHeaderBar.bottom
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.bottom: parent.bottom
-                    anchors.margins: root.s(8)
-
-                    Input {
-                        id: nameInput
-                        anchors.top: parent.top
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        height: root.s(36)
-                        baseColor: ThemeBackend.surface0
-                        textColor: ThemeBackend.text
-                        placeholderText: I18n.t("quickactions.notes.title_placeholder")
-                        cornerRadius: root.s(8)
-                        fontPixelSize: root.s(12)
-                        leadingIcon: ""
-                        showClearButton: true
-                        visible: !root.isMarkdownPreview
-                    }
-
-                    Rectangle {
-                        id: previewTitleBar
-                        anchors.top: parent.top
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        height: root.s(36)
-                        radius: root.s(8)
-                        color: ThemeBackend.surface0
-                        visible: root.isMarkdownPreview
-
-                        Text {
-                            anchors.fill: parent
-                            anchors.leftMargin: root.s(12)
-                            anchors.rightMargin: root.s(12)
-                            verticalAlignment: Text.AlignVCenter
-                            text: nameInput.text.trim().length > 0 ? nameInput.text.trim() : I18n.t("quickactions.notes.new_note_title")
-                            color: ThemeBackend.text
-                            font.family: ThemeBackend.fontFamily
-                            font.pixelSize: root.s(13)
-                            font.bold: true
-                            elide: Text.ElideRight
-                        }
-                    }
-
-                    Input {
-                        id: contentInput
-                        anchors.top: root.isMarkdownPreview ? previewTitleBar.bottom : nameInput.bottom
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        anchors.bottom: parent.bottom
-                        anchors.topMargin: root.s(8)
-                        baseColor: ThemeBackend.surface0
-                        textColor: ThemeBackend.text
-                        placeholderText: I18n.t("quickactions.notes.content_placeholder")
-                        cornerRadius: root.s(8)
-                        fontPixelSize: root.s(12)
-                        multiLine: true
-                        leadingIcon: ""
-                        visible: !root.isMarkdownPreview
-                    }
-
-                    Rectangle {
-                        id: previewContainer
-                        anchors.top: previewTitleBar.bottom
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        anchors.bottom: parent.bottom
-                        anchors.topMargin: root.s(8)
-                        color: ThemeBackend.surface0
-                        radius: root.s(8)
-                        visible: root.isMarkdownPreview
-
-                        Flickable {
-                            id: previewFlickable
-                            anchors.fill: parent
-                            anchors.margins: root.s(10)
-                            contentWidth: width
-                            contentHeight: previewText.height
-                            boundsBehavior: Flickable.StopAtBounds
-                            clip: true
-
-                            ScrollBar.vertical: ScrollBar {
-                                active: previewFlickable.moving || previewFlickable.movingVertically
-                                width: root.s(4)
-                                policy: ScrollBar.AsNeeded
-                                contentItem: Rectangle {
-                                    implicitWidth: root.s(4)
-                                    radius: root.s(2)
-                                    color: ThemeBackend.surface2
-                                }
+                            Input {
+                                id: nameInput
+                                anchors.fill: parent
+                                baseColor: ThemeBackend.surface0
+                                textColor: ThemeBackend.text
+                                placeholderText: I18n.t("quickactions.notes.title_placeholder")
+                                cornerRadius: root.s(8)
+                                fontPixelSize: root.s(12)
+                                leadingIcon: ""
+                                showClearButton: true
+                                visible: !root.isMarkdownPreview
                             }
 
-                            Text {
-                                id: previewText
-                                width: previewFlickable.width
+                            Rectangle {
+                                id: previewTitleBar
+                                anchors.fill: parent
+                                radius: root.s(8)
+                                color: ThemeBackend.surface0
                                 visible: root.isMarkdownPreview
-                                textFormat: Text.RichText
-                                text: root.markdownToHtml(contentInput.text)
-                                color: ThemeBackend.text
-                                font.family: ThemeBackend.fontFamily
-                                font.pixelSize: root.s(12)
-                                wrapMode: Text.WordWrap
+
+                                Text {
+                                    anchors.fill: parent
+                                    anchors.leftMargin: root.s(12)
+                                    anchors.rightMargin: root.s(12)
+                                    verticalAlignment: Text.AlignVCenter
+                                    text: nameInput.text.trim().length > 0 ? nameInput.text.trim() : I18n.t("quickactions.notes.new_note_title")
+                                    color: ThemeBackend.text
+                                    font.family: ThemeBackend.fontFamily
+                                    font.pixelSize: root.s(12.5)
+                                    font.bold: true
+                                    elide: Text.ElideRight
+                                }
+                            }
+                        }
+
+                        Item {
+                            id: editorContent
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+
+                            Input {
+                                id: contentInput
+                                anchors.fill: parent
+                                baseColor: ThemeBackend.surface0
+                                textColor: ThemeBackend.text
+                                placeholderText: I18n.t("quickactions.notes.content_placeholder")
+                                cornerRadius: root.s(8)
+                                fontPixelSize: root.s(12)
+                                multiLine: true
+                                leadingIcon: ""
+                                visible: !root.isMarkdownPreview
+                            }
+
+                            Rectangle {
+                                id: previewContainer
+                                anchors.fill: parent
+                                color: ThemeBackend.surface0
+                                radius: root.s(8)
+                                visible: root.isMarkdownPreview
+
+                                Flickable {
+                                    id: previewFlickable
+                                    anchors.fill: parent
+                                    anchors.margins: root.s(10)
+                                    contentWidth: width
+                                    contentHeight: previewText.height
+                                    boundsBehavior: Flickable.StopAtBounds
+                                    clip: true
+
+                                    ScrollBar.vertical: ScrollBar {
+                                        active: previewFlickable.moving || previewFlickable.movingVertically
+                                        width: root.s(4)
+                                        policy: ScrollBar.AsNeeded
+                                        contentItem: Rectangle {
+                                            implicitWidth: root.s(4)
+                                            radius: root.s(2)
+                                            color: ThemeBackend.surface2
+                                        }
+                                    }
+
+                                    Text {
+                                        id: previewText
+                                        width: previewFlickable.width
+                                        visible: root.isMarkdownPreview
+                                        textFormat: Text.RichText
+                                        text: root.markdownToHtml(contentInput.text)
+                                        color: ThemeBackend.text
+                                        font.family: ThemeBackend.fontFamily
+                                        font.pixelSize: root.s(12)
+                                        wrapMode: Text.WordWrap
+                                    }
+                                }
                             }
                         }
                     }
