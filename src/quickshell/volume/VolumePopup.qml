@@ -259,11 +259,20 @@ Item {
                                 id: orbWave
                                 anchors.fill: parent
 
-                                property real wavePhase: 0.0
-                                NumberAnimation on wavePhase {
+                                property real wavePhase: 0.8
+                                NumberAnimation {
+                                    id: orbWaveAnim
+                                    target: orbWave
+                                    property: "wavePhase"
                                     running: window.visible && window.activeVol > 0 && window.activeVol < 100
+                                    paused: !coreMa.containsMouse
                                     loops: Animation.Infinite
-                                    from: 0; to: Math.PI * 2; duration: 1200
+                                    from: 0
+                                    to: Math.PI * 2
+                                    duration: 1200
+                                    onRunningChanged: {
+                                        if (running && !coreMa.containsMouse) pause();
+                                    }
                                 }
 
                                 radius: ThemeBackend.borderRadius
@@ -325,9 +334,12 @@ Item {
                             }
 
                             MouseArea {
+                                id: coreMa
                                 anchors.fill: parent
                                 hoverEnabled: true
                                 cursorShape: Qt.PointingHandCursor
+                                onEntered: orbWaveAnim.resume()
+                                onExited: orbWaveAnim.pause()
                                 onClicked: {
                                     if (window.activeNode) {
                                         Audio.toggleMute(window.activeNode);
