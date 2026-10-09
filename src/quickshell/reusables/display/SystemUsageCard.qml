@@ -212,7 +212,7 @@ Item {
             anchors.bottom: parent.bottom
             anchors.left: parent.left
             anchors.right: parent.right
-            height: root.height
+            height: root.height - (root.contentMargins * 2)
             anchors.margins: root.contentMargins
 
             IconButton {
