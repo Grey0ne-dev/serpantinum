@@ -2,6 +2,7 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import Quickshell.Services.UPower
 import "../../"
 
 Item {
@@ -19,6 +20,7 @@ Item {
 
     property int subscribers: 0
     property bool isScanningNet: false
+    readonly property bool onBattery: UPower.displayDevice.ready && UPower.displayDevice.state === UPowerDeviceState.Discharging
 
     function subscribe() {
         subscribers++;
@@ -51,7 +53,7 @@ Item {
 
     Timer {
         id: fetchTimer
-        interval: 2000
+        interval: root.onBattery ? 4000 : 2000
         repeat: true
         running: false
         onTriggered: {
