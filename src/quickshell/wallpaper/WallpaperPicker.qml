@@ -151,18 +151,16 @@ Item {
         }
     }
 
-    Process {
+    FileView {
         id: wallpaperHistoryReader
-        running: false
-        command: ["cat", Caching.getCacheDir("wallpaper") + "/history.txt"]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                let lines = this.text.trim().split("\n").map(s => s.trim()).filter(s => s.length > 0);
-                window.historyList = lines;
-                if (window.currentFilter === "History") {
-                    if (!window.reorderHistory()) {
-                        window.applyFilters(false);
-                    }
+        path: Caching.getCacheDir("wallpaper") + "/history.txt"
+        onLoaded: {
+            let raw = typeof text === "function" ? text() : text;
+            let lines = (raw || "").trim().split("\n").map(s => s.trim()).filter(s => s.length > 0);
+            window.historyList = lines;
+            if (window.currentFilter === "History") {
+                if (!window.reorderHistory()) {
+                    window.applyFilters(false);
                 }
             }
         }
@@ -424,8 +422,7 @@ Item {
             window.reorderHistory();
         }
 
-        wallpaperHistoryReader.running = false;
-        wallpaperHistoryReader.running = true;
+        wallpaperHistoryReader.reload();
 
         if (window.currentFilter === "Search" && window.hasSearched) {
             let alreadyExists = window.isDownloaded(safeFileName);
@@ -560,8 +557,7 @@ Item {
         window.trackerResolved = false;
         wallpaperMonitorTracker.running = false;
         wallpaperMonitorTracker.running = true;
-        wallpaperHistoryReader.running = false;
-        wallpaperHistoryReader.running = true;
+        wallpaperHistoryReader.reload();
         window.isFilterAnimating = true;
         filterAnimationTimer.restart();
 
@@ -1092,8 +1088,7 @@ Item {
         window.currentFilter = newFilter;
 
         if (newFilter === "History") {
-            wallpaperHistoryReader.running = false;
-            wallpaperHistoryReader.running = true;
+            wallpaperHistoryReader.reload();
         }
 
         Qt.callLater(() => {

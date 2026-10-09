@@ -26,30 +26,43 @@ Item {
         }
     }
 
-    Process {
-        id: i18nLoader
-        command: [
-            "bash",
-            "-c",
-            `ls "${root.i18nDir}"/*.json >/dev/null 2>&1 && jq -n 'reduce inputs as $i ( {}; . + { ($i | input_filename | split("/") | last | rtrimstr(".json")): $i } )' "${root.i18nDir}"/*.json || echo "{}"`
-        ]
-        running: true
-        stdout: StdioCollector {
-            onStreamFinished: {
-                try {
-                    let txt = this.text.trim();
-                    if (txt && txt.length > 0) {
-                        root.translations = JSON.parse(txt);
-                    } else {
-                        root.translations = {};
-                    }
-                } catch (e) {
-                    root.translations = {};
-                }
-                root.isReady = true;
-                root.languageChanged();
+    FileView {
+        id: langFileView
+        path: root.i18nDir + "/" + root.currentLang + ".json"
+        onLoaded: root.reloadTranslations()
+    }
+
+    FileView {
+        id: fallbackFileView
+        path: root.i18nDir + "/en.json"
+        onLoaded: root.reloadTranslations()
+    }
+
+    function reloadTranslations() {
+        let newTrans = Object.assign({}, root.translations);
+        try {
+            let fb = typeof fallbackFileView.text === "function" ? fallbackFileView.text() : fallbackFileView.text;
+            if (fb && fb.trim().length > 0) {
+                newTrans["en"] = JSON.parse(fb);
             }
+        } catch(e) {}
+
+        if (root.currentLang !== "en") {
+            try {
+                let lt = typeof langFileView.text === "function" ? langFileView.text() : langFileView.text;
+                if (lt && lt.trim().length > 0) {
+                    newTrans[root.currentLang] = JSON.parse(lt);
+                }
+            } catch(e) {}
         }
+        root.translations = newTrans;
+        root.isReady = true;
+        root.languageChanged();
+    }
+
+    onCurrentLangChanged: {
+        langFileView.path = root.i18nDir + "/" + root.currentLang + ".json";
+        reloadTranslations();
     }
 
     function systemLanguage() {
@@ -98,5 +111,6 @@ Item {
         if (gen && gen.language) {
             root.currentLang = gen.language;
         }
+        root.reloadTranslations();
     }
 }
