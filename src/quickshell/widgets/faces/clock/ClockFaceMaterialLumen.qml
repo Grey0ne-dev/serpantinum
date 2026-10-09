@@ -17,48 +17,16 @@ Item {
     property bool showSeconds: true
 
     property var currentTime: new Date()
-    property real secondAngle: 0
-    property real minuteAngle: 0
-    property real hourAngle: 0
-
-    function syncTime() {
-        var now = new Date();
-        root.currentTime = now;
-        var s = now.getSeconds();
-        var m = now.getMinutes();
-        var h = now.getHours() % 12;
-        var targetSec = s * 6;
-        var currentMod = ((secondAngle % 360) + 360) % 360;
-        var diff = targetSec - currentMod;
-        if (diff < -180) diff += 360;
-        if (diff > 180) diff -= 360;
-        secondAngle += diff;
-        minuteAngle = m * 6 + s * 0.1;
-        hourAngle = h * 30 + m * 0.5 + s * (0.5 / 60);
-    }
-
-    Behavior on secondAngle {
-        enabled: root.visible && root.showSeconds
-        NumberAnimation { duration: 1000; easing.type: Easing.Linear }
-    }
 
     Timer {
-        interval: 1000
+        interval: root.showSeconds ? 40 : 1000
         running: root.visible
         repeat: true
-        onTriggered: root.syncTime()
+        onTriggered: root.currentTime = new Date()
     }
 
     onVisibleChanged: {
-        if (root.visible) root.syncTime();
-    }
-
-    Component.onCompleted: {
-        var now = new Date();
-        root.currentTime = now;
-        root.secondAngle = now.getSeconds() * 6;
-        root.minuteAngle = now.getMinutes() * 6 + now.getSeconds() * 0.1;
-        root.hourAngle = (now.getHours() % 12) * 30 + now.getMinutes() * 0.5 + now.getSeconds() * (0.5 / 60);
+        if (root.visible) root.currentTime = new Date();
     }
 
     function resolveColor(token, fallback) {
@@ -198,7 +166,7 @@ Item {
             id: hourPivot
             anchors.centerIn: parent
             z: 1
-            rotation: root.hourAngle
+            rotation: (root.currentTime.getHours() % 12) * 30 + root.currentTime.getMinutes() * 0.5 + root.currentTime.getSeconds() * (0.5 / 60)
 
             Rectangle {
                 width: root.handWidth
@@ -216,7 +184,7 @@ Item {
             id: minutePivot
             anchors.centerIn: parent
             z: 2
-            rotation: root.minuteAngle
+            rotation: root.currentTime.getMinutes() * 6 + root.currentTime.getSeconds() * 0.1
 
             Rectangle {
                 width: root.handWidth
@@ -235,7 +203,7 @@ Item {
             visible: root.showSeconds
             anchors.centerIn: parent
             z: 3
-            rotation: root.secondAngle
+            rotation: (root.currentTime.getSeconds() + root.currentTime.getMilliseconds() / 1000) * 6
 
             Rectangle {
                 width: root.secondHandWidth
