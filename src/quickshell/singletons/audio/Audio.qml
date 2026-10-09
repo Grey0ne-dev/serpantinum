@@ -3,24 +3,13 @@ import QtQuick
 import Quickshell
 import Quickshell.Services.Pipewire
 
+import "AudioCache.js" as AudioCache
+
 Singleton {
     id: root
 
     PwObjectTracker {
         objects: Pipewire.nodes.values
-    }
-
-    property var _cachedOutputs: []
-    property var _cachedInputs: []
-    property var _cachedApps: []
-
-    function _arraysEqual(a, b) {
-        if (!a || !b) return false;
-        if (a.length !== b.length) return false;
-        for (let i = 0; i < a.length; i++) {
-            if (a[i] !== b[i]) return false;
-        }
-        return true;
     }
 
     function isSerpantinumStream(node) {
@@ -40,9 +29,7 @@ Singleton {
         for (const n of Pipewire.nodes.values) {
             if (!n.isStream && n.isSink && n.audio) arr.push(n);
         }
-        if (_arraysEqual(arr, _cachedOutputs)) return _cachedOutputs;
-        _cachedOutputs = arr;
-        return arr;
+        return AudioCache.updateOutputs(arr);
     }
 
     readonly property var inputs: {
@@ -54,9 +41,7 @@ Singleton {
                 arr.push(n);
             }
         }
-        if (_arraysEqual(arr, _cachedInputs)) return _cachedInputs;
-        _cachedInputs = arr;
-        return arr;
+        return AudioCache.updateInputs(arr);
     }
 
     readonly property var apps: {
@@ -68,9 +53,7 @@ Singleton {
                 arr.push(n);
             }
         }
-        if (_arraysEqual(arr, _cachedApps)) return _cachedApps;
-        _cachedApps = arr;
-        return arr;
+        return AudioCache.updateApps(arr);
     }
 
     readonly property PwNode defaultSink: Pipewire.defaultAudioSink
