@@ -405,19 +405,17 @@ PanelWindow {
 
     function applyConfigSettings() {
         let parsed = (typeof Config !== "undefined" && Config.rawSettings) ? Config.rawSettings : {};
-        let sName = masterWindow.screen ? masterWindow.screen.name : "";
         let sVal = undefined;
 
-        if (sName !== "" && parsed.display && parsed.display.monitors && parsed.display.monitors[sName] && parsed.display.monitors[sName].scale !== undefined) {
-            sVal = parsed.display.monitors[sName].scale;
-        } else if (parsed.general && parsed.general.uiScale !== undefined) {
+        if (parsed.general && parsed.general.uiScale !== undefined) {
             sVal = parsed.general.uiScale;
         } else if (parsed.uiScale !== undefined) {
             sVal = parsed.uiScale;
         }
 
-        if (sVal !== undefined && masterWindow.globalUiScale !== sVal) {
-            masterWindow.globalUiScale = sVal;
+        let targetScale = (sVal !== undefined && typeof sVal === "number" && !isNaN(sVal) && sVal > 0) ? sVal : 1.0;
+        if (masterWindow.globalUiScale !== targetScale) {
+            masterWindow.globalUiScale = targetScale;
         }
 
         let b = parsed.bar || {};
