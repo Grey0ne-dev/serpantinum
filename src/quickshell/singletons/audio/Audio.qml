@@ -10,11 +10,38 @@ Singleton {
         objects: Pipewire.nodes.values
     }
 
+    property var _cachedOutputs: []
+    property var _cachedInputs: []
+    property var _cachedApps: []
+
+    function _arraysEqual(a, b) {
+        if (!a || !b) return false;
+        if (a.length !== b.length) return false;
+        for (let i = 0; i < a.length; i++) {
+            if (a[i] !== b[i]) return false;
+        }
+        return true;
+    }
+
+    function isSerpantinumStream(node) {
+        if (!node || !node.properties) return false;
+        let p = node.properties;
+        let appId = p["application.id"] || "";
+        let appName = p["application.name"] || "";
+        if (appId === "serpantinum-sfx" || appId === "serpantinum" || appId === "org.serpantinum.sfx") return true;
+        if (appName === "serpantinum-sfx" || appName === "serpantinum") return true;
+        let mediaFile = p["media.filename"] || p["media.name"] || "";
+        if (mediaFile.indexOf("assets/sounds/") !== -1) return true;
+        return false;
+    }
+
     readonly property var outputs: {
         let arr = [];
         for (const n of Pipewire.nodes.values) {
             if (!n.isStream && n.isSink && n.audio) arr.push(n);
         }
+        if (_arraysEqual(arr, _cachedOutputs)) return _cachedOutputs;
+        _cachedOutputs = arr;
         return arr;
     }
 
@@ -27,6 +54,8 @@ Singleton {
                 arr.push(n);
             }
         }
+        if (_arraysEqual(arr, _cachedInputs)) return _cachedInputs;
+        _cachedInputs = arr;
         return arr;
     }
 
@@ -34,10 +63,13 @@ Singleton {
         let arr = [];
         for (const n of Pipewire.nodes.values) {
             if (n.isStream && n.audio
-                && n.properties?.["application.id"] !== "org.PulseAudio.pavucontrol") {
+                && n.properties?.["application.id"] !== "org.PulseAudio.pavucontrol"
+                && !isSerpantinumStream(n)) {
                 arr.push(n);
             }
         }
+        if (_arraysEqual(arr, _cachedApps)) return _cachedApps;
+        _cachedApps = arr;
         return arr;
     }
 
