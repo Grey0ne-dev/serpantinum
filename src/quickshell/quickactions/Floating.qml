@@ -21,7 +21,7 @@ Variants {
             exclusionMode: ExclusionMode.Ignore
             color: "transparent"
 
-            readonly property bool shouldHaveKeyboardFocus: isSidebarVisible && (!isPinned || isExpanded || hasInputFocus || (typeof mainHoverTracker !== "undefined" && mainHoverTracker.hovered))
+            readonly property bool shouldHaveKeyboardFocus: isSidebarVisible && (isExpanded || hasInputFocus)
 
             readonly property bool hasInputFocus: {
                 let loader = (typeof moduleRepeater !== "undefined" && activeIndex >= 0 && activeIndex < moduleRepeater.count)
@@ -290,15 +290,6 @@ Variants {
                         }
                     }
                 }
-                onActiveFocusChanged: {
-                    if (!activeFocus && floatingWidget.shouldHaveKeyboardFocus && !floatingWidget.hasInputFocus) {
-                        Qt.callLater(() => {
-                            if (floatingWidget.shouldHaveKeyboardFocus && !floatingWidget.hasInputFocus) {
-                                focusTracker.forceActiveFocus();
-                            }
-                        });
-                    }
-                }
             }
 
             property bool isPinned: false
@@ -488,7 +479,9 @@ Variants {
                         }
                     }
                 }
-                focusTracker.forceActiveFocus();
+                if (isExpanded) {
+                    focusTracker.forceActiveFocus();
+                }
             }
 
             property real baseScale: Scaler.baseScale
