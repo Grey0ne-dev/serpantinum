@@ -1031,7 +1031,12 @@
       "cancel": "취소",
       "delete": "삭제",
       "select_all": "모두 선택",
-      "deselect_all": "선택 해제"
+      "deselect_all": "선택 해제",
+      "selected_count": "{count}개 선택됨",
+      "pinned": "고정됨",
+      "recent": "최근",
+      "pin": "고정",
+      "unpin": "고정 해제"
     },
     "tabs": {
       "draw": "그리기",

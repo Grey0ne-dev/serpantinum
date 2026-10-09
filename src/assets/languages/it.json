@@ -1030,7 +1030,12 @@
       "cancel": "Annulla",
       "delete": "Elimina",
       "select_all": "Seleziona tutto",
-      "deselect_all": "Deseleziona"
+      "deselect_all": "Deseleziona",
+      "selected_count": "{count} selezionate",
+      "pinned": "Fissati",
+      "recent": "Recenti",
+      "pin": "Fissa",
+      "unpin": "Sblocca"
     },
     "tabs": {
       "draw": "Disegno",

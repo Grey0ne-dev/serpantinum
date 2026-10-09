@@ -1025,7 +1025,12 @@
       "cancel": "Ləğv et",
       "delete": "Sil",
       "select_all": "Hamısını seç",
-      "deselect_all": "Seçimi ləğv et"
+      "deselect_all": "Seçimi ləğv et",
+      "selected_count": "{count} seçildi",
+      "pinned": "Bərkidilmiş",
+      "recent": "Son istifadə olunanlar",
+      "pin": "Bərkit",
+      "unpin": "Bərkitməni sil"
     },
     "tabs": {
       "draw": "Rəsm",

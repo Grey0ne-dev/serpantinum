@@ -1075,7 +1075,12 @@
       "cancel": "Abbrechen",
       "delete": "Löschen",
       "select_all": "Alle auswählen",
-      "deselect_all": "Auswahl aufheben"
+      "deselect_all": "Auswahl aufheben",
+      "selected_count": "{count} ausgewählt",
+      "pinned": "Angeheftet",
+      "recent": "Zuletzt verwendet",
+      "pin": "Anheften",
+      "unpin": "Lösen"
     },
     "tabs": {
       "draw": "Zeichnen",

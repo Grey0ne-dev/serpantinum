@@ -1054,7 +1054,12 @@
       "cancel": "Скасувати",
       "delete": "Видалити",
       "select_all": "Вибрати всі",
-      "deselect_all": "Зняти вибір"
+      "deselect_all": "Зняти вибір",
+      "selected_count": "Вибрано: {count}",
+      "pinned": "Закріплені",
+      "recent": "Нещодавні",
+      "pin": "Закріпити",
+      "unpin": "Відкріпити"
     },
     "tabs": {
       "draw": "Малювання",

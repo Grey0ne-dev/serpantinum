@@ -1031,7 +1031,12 @@
       "cancel": "Hủy",
       "delete": "Xóa",
       "select_all": "Chọn tất cả",
-      "deselect_all": "Bỏ chọn"
+      "deselect_all": "Bỏ chọn",
+      "selected_count": "Đã chọn {count}",
+      "pinned": "Đã ghim",
+      "recent": "Gần đây",
+      "pin": "Ghim",
+      "unpin": "Bỏ ghim"
     },
     "tabs": {
       "draw": "Vẽ",

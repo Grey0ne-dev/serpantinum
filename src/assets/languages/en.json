@@ -1031,7 +1031,12 @@
       "cancel": "Cancel",
       "delete": "Delete",
       "select_all": "Select all",
-      "deselect_all": "Deselect"
+      "deselect_all": "Deselect",
+      "selected_count": "{count} selected",
+      "pinned": "Pinned",
+      "recent": "Recent",
+      "pin": "Pin",
+      "unpin": "Unpin"
     },
     "tabs": {
       "draw": "Draw",

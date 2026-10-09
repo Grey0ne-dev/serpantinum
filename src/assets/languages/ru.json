@@ -1075,7 +1075,12 @@
       "cancel": "Отмена",
       "delete": "Удалить",
       "select_all": "Выбрать все",
-      "deselect_all": "Снять выбор"
+      "deselect_all": "Снять выбор",
+      "selected_count": "Выбрано: {count}",
+      "pinned": "Закрепленные",
+      "recent": "Недавние",
+      "pin": "Закрепить",
+      "unpin": "Открепить"
     },
     "tabs": {
       "draw": "Рисование",
