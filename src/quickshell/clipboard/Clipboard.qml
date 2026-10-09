@@ -741,8 +741,10 @@ PanelWindow {
 
             Item {
                 id: contentContainer
-                anchors.fill: parent
-                anchors.margins: clipboardWindow.s(14)
+                x: clipboardWindow.attachEdge === "right" ? (parent.width - width - clipboardWindow.s(14)) : clipboardWindow.s(14)
+                y: clipboardWindow.s(14)
+                width: clipboardWindow.baseLauncherWidth - (clipboardWindow.s(14) * 2)
+                height: Math.max(0, parent.height - (clipboardWindow.s(14) * 2))
 
                 readonly property bool isSearchAtBottom: clipboardWindow.attachEdge === "bottom"
 
@@ -1224,10 +1226,9 @@ PanelWindow {
                                     source: (clipDelegateCard.isImage && model.content) ? (model.content.startsWith("file://") ? model.content : "file://" + model.content) : ""
                                     fillMode: Image.PreserveAspectCrop
                                     asynchronous: true
-                                    cache: false
                                     smooth: true
-                                    sourceSize.width: Math.round(Math.max(100, clipDelegateCard.width * (Screen.devicePixelRatio || 1)))
-                                    sourceSize.height: Math.round(Math.max(100, clipDelegateCard.expandedH * (Screen.devicePixelRatio || 1)))
+                                    cache: false
+                                    sourceSize: Qt.size(Math.round(clipboardWindow.baseLauncherWidth * (Screen.devicePixelRatio || 1)), Math.round(clipboardWindow.s(250) * (Screen.devicePixelRatio || 1)))
                                     visible: clipDelegateCard.isImage && opacity > 0.01
                                     opacity: 1.0 - (clipDelegateWrapper.itemExpandProgress * 0.85)
                                 }
@@ -1239,10 +1240,9 @@ PanelWindow {
                                     source: (clipDelegateCard.isImage && model.content && clipDelegateWrapper.itemExpandProgress > 0.01) ? (model.content.startsWith("file://") ? model.content : "file://" + model.content) : ""
                                     fillMode: Image.PreserveAspectFit
                                     asynchronous: true
-                                    cache: false
                                     smooth: true
-                                    sourceSize.width: Math.round(Math.max(100, clipDelegateCard.width * (Screen.devicePixelRatio || 1)))
-                                    sourceSize.height: Math.round(Math.max(100, clipDelegateCard.expandedH * (Screen.devicePixelRatio || 1)))
+                                    cache: false
+                                    sourceSize: Qt.size(Math.round(clipboardWindow.baseLauncherWidth * (Screen.devicePixelRatio || 1)), Math.round(clipboardWindow.s(250) * (Screen.devicePixelRatio || 1)))
                                     visible: clipDelegateCard.isImage && clipDelegateWrapper.itemExpandProgress > 0.01
                                     opacity: clipDelegateWrapper.itemExpandProgress
                                 }
@@ -1397,10 +1397,9 @@ PanelWindow {
                                         source: (!clipDelegateCard.isImage && model.type === "image" && model.content) ? (model.content.startsWith("file://") ? model.content : "file://" + model.content) : ""
                                         fillMode: Image.PreserveAspectCrop
                                         asynchronous: true
-                                        cache: false
                                         smooth: true
-                                        sourceSize.width: Math.round(clipboardWindow.s(60) * (Screen.devicePixelRatio || 1))
-                                        sourceSize.height: Math.round(clipboardWindow.s(60) * (Screen.devicePixelRatio || 1))
+                                        cache: false
+                                        sourceSize: Qt.size(Math.round(clipboardWindow.s(60) * (Screen.devicePixelRatio || 1)), Math.round(clipboardWindow.s(60) * (Screen.devicePixelRatio || 1)))
                                         visible: model.type === "image" && status === Image.Ready
                                     }
 
