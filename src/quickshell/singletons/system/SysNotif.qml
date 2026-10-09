@@ -33,6 +33,7 @@ Item {
         let u = urgency ? urgency : "normal";
         let ic = icon ? icon : "battery";
         let appName = I18n.t("sysnotif.battery.app_name");
+        if (appName === "sysnotif.battery.app_name") appName = "System";
         Quickshell.execDetached([
             "notify-send",
             "-a", appName,
@@ -61,11 +62,14 @@ Item {
             }
 
             if ((pct >= 100 || state === UPowerDeviceState.FullyCharged) && !root.notifiedFull) {
+                let title = I18n.t("sysnotif.battery.full_title");
+                let body = I18n.t("sysnotif.battery.full_body");
+                if (title === "sysnotif.battery.full_title" || body === "sysnotif.battery.full_body") return;
                 root.notifiedFull = true;
                 root.sendNotification(
                     "full",
-                    I18n.t("sysnotif.battery.full_title"),
-                    I18n.t("sysnotif.battery.full_body"),
+                    title,
+                    body,
                     "battery-full-charged",
                     "normal"
                 );
@@ -73,23 +77,29 @@ Item {
         } else {
             if (pct <= 5) {
                 if (!root.notifiedCritical) {
+                    let title = I18n.t("sysnotif.battery.critical_title");
+                    let body = I18n.t("sysnotif.battery.critical_body", { "pct": pct.toString() });
+                    if (title === "sysnotif.battery.critical_title") return;
                     root.notifiedCritical = true;
                     root.notifiedLow = true;
                     root.sendNotification(
                         "critical",
-                        I18n.t("sysnotif.battery.critical_title"),
-                        I18n.t("sysnotif.battery.critical_body", { "pct": pct.toString() }),
+                        title,
+                        body,
                         "battery-level-0-symbolic",
                         "critical"
                     );
                 }
             } else if (pct <= 20) {
                 if (!root.notifiedLow) {
+                    let title = I18n.t("sysnotif.battery.low_title");
+                    let body = I18n.t("sysnotif.battery.low_body", { "pct": pct.toString() });
+                    if (title === "sysnotif.battery.low_title") return;
                     root.notifiedLow = true;
                     root.sendNotification(
                         "low",
-                        I18n.t("sysnotif.battery.low_title"),
-                        I18n.t("sysnotif.battery.low_body", { "pct": pct.toString() }),
+                        title,
+                        body,
                         "battery-level-20-symbolic",
                         "critical"
                     );
