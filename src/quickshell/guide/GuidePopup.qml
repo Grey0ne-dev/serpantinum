@@ -581,9 +581,17 @@ Item {
         }
     }
 
+    property var exitCallback: null
+
+    function startExit(onFinished) {
+        exitCallback = onFinished;
+        closePopup();
+    }
+
     function closePopup() {
         closeSearch();
-        closeSequence.start();
+        startupSequence.stop();
+        closeSequence.restart();
     }
 
     function s(val) {
@@ -805,7 +813,11 @@ Item {
             event.accepted = true;
             return;
         }
-        closeSequence.start();
+        if (typeof masterWindow !== "undefined" && masterWindow.switchWidget) {
+            masterWindow.switchWidget("hidden", "");
+        } else {
+            closePopup();
+        }
         event.accepted = true;
     }
     Keys.onDownPressed: (event) => {
@@ -1016,7 +1028,15 @@ Item {
             easing.type: Easing.InQuart
         }
         ScriptAction {
-            script: Quickshell.execDetached(["bash", Caching.serpantinumDir + "/scripts/qs_manager.sh", "close"])
+            script: {
+                if (root.exitCallback) {
+                    let cb = root.exitCallback;
+                    root.exitCallback = null;
+                    cb();
+                } else {
+                    Quickshell.execDetached(["bash", Caching.serpantinumDir + "/scripts/qs_manager.sh", "close"]);
+                }
+            }
         }
     }
 

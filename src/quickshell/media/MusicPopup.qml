@@ -44,7 +44,17 @@ Item {
         return (m < 10 ? "0" : "") + m + ":" + (s < 10 ? "0" : "") + s;
     }
 
+    property var exitCallback: null
+
+    function startExit(onFinished) {
+        introAnim.stop();
+        chargeAnim.stop();
+        exitCallback = onFinished;
+        exitAnim.restart();
+    }
+
     function resetAndPlayIntro() {
+        exitAnim.stop();
         introMain = 0;
         introCover = 0;
         introText = 0;
@@ -106,6 +116,7 @@ Item {
                 titleAnim.restart();
             }
         } else {
+            exitAnim.stop();
             unregisterCava();
             titleAnim.stop();
             marqueeContainer.x = 0;
@@ -512,6 +523,39 @@ Item {
         SequentialAnimation {
             PauseAnimation { duration: 550 }
             NumberAnimation { target: root; property: "introPresets"; from: 0; to: 1.0; duration: 810; easing.type: Easing.OutBack; easing.overshoot: 0.8 }
+        }
+    }
+
+    SequentialAnimation {
+        id: exitAnim
+        running: false
+        ParallelAnimation {
+            NumberAnimation { target: root; property: "introPresets"; to: 0.0; duration: 130; easing.type: Easing.InBack }
+            NumberAnimation { target: root; property: "introEqSliders"; to: 0.0; duration: 140; easing.type: Easing.InExpo }
+            SequentialAnimation {
+                PauseAnimation { duration: 30 }
+                NumberAnimation { target: root; property: "introEqHeader"; to: 0.0; duration: 130; easing.type: Easing.InCubic }
+                NumberAnimation { target: root; property: "introSeparator"; to: 0.0; duration: 130; easing.type: Easing.InCubic }
+            }
+            SequentialAnimation {
+                PauseAnimation { duration: 50 }
+                NumberAnimation { target: root; property: "introControls"; to: 0.0; duration: 140; easing.type: Easing.InBack }
+                NumberAnimation { target: root; property: "introText"; to: 0.0; duration: 140; easing.type: Easing.InCubic }
+                NumberAnimation { target: root; property: "introCover"; to: 0.0; duration: 150; easing.type: Easing.InBack }
+            }
+            SequentialAnimation {
+                PauseAnimation { duration: 70 }
+                NumberAnimation { target: root; property: "introMain"; to: 0.0; duration: 170; easing.type: Easing.InQuart }
+            }
+        }
+        ScriptAction {
+            script: {
+                if (root.exitCallback) {
+                    let cb = root.exitCallback;
+                    root.exitCallback = null;
+                    cb();
+                }
+            }
         }
     }
 

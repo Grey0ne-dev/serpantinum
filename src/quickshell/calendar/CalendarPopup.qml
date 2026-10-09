@@ -105,7 +105,16 @@ Item {
     property real introCalendar: 0
     property real introWeather: 0
 
+    property var exitCallback: null
+
+    function startExit(onFinished) {
+        introAnim.stop();
+        exitCallback = onFinished;
+        exitAnim.restart();
+    }
+
     function resetAndPlayIntro() {
+        exitAnim.stop();
         startupComplete = false;
         introMain = 0;
         introAmbient = 0;
@@ -181,13 +190,31 @@ Item {
         ScriptAction { script: window.startupComplete = true }
     }
 
-    ParallelAnimation {
+    SequentialAnimation {
         id: exitAnim
-        NumberAnimation { target: window; property: "introMain"; to: 0; duration: 400; easing.type: Easing.InQuart }
-        NumberAnimation { target: window; property: "introAmbient"; to: 0; duration: 250; easing.type: Easing.InQuart }
-        NumberAnimation { target: window; property: "introClock"; to: 0; duration: 300; easing.type: Easing.InQuart }
-        NumberAnimation { target: window; property: "introCalendar"; to: 0; duration: 350; easing.type: Easing.InQuart }
-        NumberAnimation { target: window; property: "introWeather"; to: 0; duration: 350; easing.type: Easing.InQuart }
+        running: false
+        ParallelAnimation {
+            NumberAnimation { target: window; property: "introWeather"; to: 0; duration: 150; easing.type: Easing.InCubic }
+            NumberAnimation { target: window; property: "introCalendar"; to: 0; duration: 150; easing.type: Easing.InCubic }
+            SequentialAnimation {
+                PauseAnimation { duration: 30 }
+                NumberAnimation { target: window; property: "introClock"; to: 0; duration: 160; easing.type: Easing.InBack }
+                NumberAnimation { target: window; property: "introAmbient"; to: 0; duration: 140; easing.type: Easing.InQuad }
+            }
+            SequentialAnimation {
+                PauseAnimation { duration: 50 }
+                NumberAnimation { target: window; property: "introMain"; to: 0; duration: 180; easing.type: Easing.InQuart }
+            }
+        }
+        ScriptAction {
+            script: {
+                if (window.exitCallback) {
+                    let cb = window.exitCallback;
+                    window.exitCallback = null;
+                    cb();
+                }
+            }
+        }
     }
 
     property real globalOrbitOffset: 0

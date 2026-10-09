@@ -97,8 +97,42 @@ Item {
     }
 
     property int cardIntroDelay: 0
+    property real exitOpacity: 1.0
+
+    property var exitCallback: null
+
+    function startExit(onFinished) {
+        introPlayTimer.stop();
+        window.exitCallback = onFinished;
+        exitAnim.restart();
+    }
+
+    SequentialAnimation {
+        id: exitAnim
+        running: false
+        NumberAnimation {
+            target: window
+            property: "exitOpacity"
+            to: 0.0
+            duration: 85
+            easing.type: Easing.OutQuad
+        }
+        ScriptAction {
+            script: {
+                window.introState = 0.0;
+                window.exitOpacity = 1.0;
+                if (window.exitCallback) {
+                    let cb = window.exitCallback;
+                    window.exitCallback = null;
+                    cb();
+                }
+            }
+        }
+    }
 
     function resetAndPlayIntro() {
+        exitAnim.stop();
+        window.exitOpacity = 1.0;
         window.powerAnimAllowed = false;
         powerAnimBlocker.restart();
         window.cardIntroDelay = 0;
@@ -136,6 +170,8 @@ Item {
             window.fetchFreqData();
             if (window.activeMode === "bt" && !btProfilePoller.running) btProfilePoller.running = true;
         } else {
+            exitAnim.stop();
+            window.exitOpacity = 1.0;
             window.stopBtScan();
             window.stopWifiScan();
             btProfilePoller.running = false;
@@ -1416,8 +1452,8 @@ Item {
         anchors.fill: parent
         visible: window.visible
         enabled: window.visible
-        opacity: window.easeOut(window.animWin(window.introState, 0.0, 0.12))
-        scale: 0.96 + 0.04 * window.easeOut(window.animWin(window.introState, 0.0, 0.12))
+        opacity: window.exitOpacity * window.easeOut(window.animWin(window.introState, 0.0, 0.12))
+        scale: (0.96 + 0.04 * window.easeOut(window.animWin(window.introState, 0.0, 0.12))) * (0.97 + 0.03 * window.exitOpacity)
         transformOrigin: Item.Center
 
         Rectangle {

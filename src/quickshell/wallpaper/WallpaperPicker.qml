@@ -102,7 +102,37 @@ Item {
     }
 
     property bool isStartup: srcModel.status === FolderListModel.Loading && localProxyModel.count === 0 && videoProxyModel.count === 0
-    property bool isReady: visible
+    property bool isExiting: false
+    property bool isReady: visible && !isExiting
+
+    property var exitCallback: null
+
+    function startExit(onFinished) {
+        if (isExiting) return;
+        isExiting = true;
+        exitCallback = onFinished;
+        exitAnim.restart();
+    }
+
+    SequentialAnimation {
+        id: exitAnim
+        running: false
+        ParallelAnimation {
+            NumberAnimation { target: filterBarBackground; property: "anchors.topMargin"; to: window.s(-75); duration: 180; easing.type: Easing.InCubic }
+            NumberAnimation { target: filterBarBackground; property: "opacity"; to: 0.0; duration: 160; easing.type: Easing.InQuad }
+            NumberAnimation { target: view; property: "opacity"; to: 0.0; duration: 200; easing.type: Easing.InQuad }
+            NumberAnimation { target: view; property: "anchors.margins"; to: window.s(45); duration: 200; easing.type: Easing.InCubic }
+        }
+        ScriptAction {
+            script: {
+                if (window.exitCallback) {
+                    let cb = window.exitCallback;
+                    window.exitCallback = null;
+                    cb();
+                }
+            }
+        }
+    }
 
     property bool _rawSearchLoading: searchFolderModel.status === FolderListModel.Loading
     property bool isSearchActive: false
@@ -577,6 +607,8 @@ Item {
 
     onVisibleChanged: {
         if (!visible) {
+            window.isExiting = false;
+            exitAnim.stop();
             window.initialFocusSet = false;
             window.allowAddAnimation = false;
             window.searchIndexRestored = false;
@@ -604,6 +636,8 @@ Item {
                 ]);
             }
         } else {
+            window.isExiting = false;
+            exitAnim.stop();
             window.loadMonitors();
             window.refreshForDisplay();
             focusTimer.restart();
