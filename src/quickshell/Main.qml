@@ -351,6 +351,12 @@ PanelWindow {
     Component.onCompleted: {
         applyConfigSettings();
         reportWidgetState();
+        Qt.callLater(function() {
+            if (masterWindow.currentActive === "hidden") {
+                let t = masterWindow.getLayout("guide");
+                if (t) masterWindow.ensureWidgetItem("guide", t);
+            }
+        });
     }
 
     Component.onDestruction: {
