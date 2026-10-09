@@ -1037,6 +1037,31 @@
         "failed_title": "Помилка експорту",
         "failed_body": "Не вдалося зберегти малюнок"
       }
+    },
+    "notes": {
+      "title": "Нотатки",
+      "add_note": "Додати нотатку",
+      "new_note_title": "Нова нотатка",
+      "edit_note": "Редагувати",
+      "preview_note": "Перегляд markdown",
+      "delete_selected": "Видалити вибрані ({count})",
+      "no_notes": "Нотаток поки немає. Натисніть «Додати нотатку».",
+      "search_placeholder": "Пошук нотаток...",
+      "title_placeholder": "Заголовок нотатки...",
+      "content_placeholder": "Текст нотатки у форматі markdown...",
+      "back": "Назад",
+      "save": "Готово",
+      "cancel": "Скасувати",
+      "delete": "Видалити",
+      "select_all": "Вибрати всі",
+      "deselect_all": "Зняти вибір"
+    },
+    "tabs": {
+      "draw": "Малювання",
+      "system": "Система",
+      "timer": "Таймер",
+      "notes": "Нотатки",
+      "tab": "Вкладка"
     }
   },
   "screenshot": {

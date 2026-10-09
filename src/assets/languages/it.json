@@ -1013,6 +1013,31 @@
         "failed_title": "Esportazione non riuscita",
         "failed_body": "Impossibile salvare il disegno"
       }
+    },
+    "notes": {
+      "title": "Note",
+      "add_note": "Aggiungi nota",
+      "new_note_title": "Nuova nota",
+      "edit_note": "Modifica",
+      "preview_note": "Anteprima markdown",
+      "delete_selected": "Elimina selezionate ({count})",
+      "no_notes": "Nessuna nota presente. Fai clic su «Aggiungi nota».",
+      "search_placeholder": "Cerca note...",
+      "title_placeholder": "Titolo della nota...",
+      "content_placeholder": "Scrivi la nota in markdown...",
+      "back": "Indietro",
+      "save": "Fatto",
+      "cancel": "Annulla",
+      "delete": "Elimina",
+      "select_all": "Seleziona tutto",
+      "deselect_all": "Deseleziona"
+    },
+    "tabs": {
+      "draw": "Disegno",
+      "system": "Sistema",
+      "timer": "Timer",
+      "notes": "Note",
+      "tab": "Scheda"
     }
   },
   "screenshot": {

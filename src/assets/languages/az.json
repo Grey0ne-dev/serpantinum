@@ -1008,6 +1008,31 @@
         "failed_title": "Export failed",
         "failed_body": "Could not save drawing"
       }
+    },
+    "notes": {
+      "title": "Qeydlər",
+      "add_note": "Qeyd əlavə et",
+      "new_note_title": "Yeni qeyd",
+      "edit_note": "Redaktə et",
+      "preview_note": "Markdown baxışı",
+      "delete_selected": "Seçilənləri sil ({count})",
+      "no_notes": "Hələ qeyd yoxdur. «Qeyd əlavə et» düyməsinə basın.",
+      "search_placeholder": "Qeydləri axtarın...",
+      "title_placeholder": "Qeydin başlığı...",
+      "content_placeholder": "Qeydin məzmununu markdown ilə yazın...",
+      "back": "Geri",
+      "save": "Hazırdır",
+      "cancel": "Ləğv et",
+      "delete": "Sil",
+      "select_all": "Hamısını seç",
+      "deselect_all": "Seçimi ləğv et"
+    },
+    "tabs": {
+      "draw": "Rəsm",
+      "system": "Sistem",
+      "timer": "Taymer",
+      "notes": "Qeydlər",
+      "tab": "Vərəq"
     }
   },
   "screenshot": {

@@ -25,8 +25,24 @@ Variants {
             anchors {
                 top: true; bottom: true; left: true; right: true
             }
+
+            onFocusableChanged: {
+                if (focusable) {
+                    if (typeof floatingWidget.requestActivate === "function") {
+                        floatingWidget.requestActivate();
+                    }
+                    focusTracker.forceActiveFocus();
+                }
+            }
+
             onIsSidebarVisibleChanged: {
-                if (isSidebarVisible) SysData.prewarm();
+                if (isSidebarVisible) {
+                    SysData.prewarm();
+                    if (typeof floatingWidget.requestActivate === "function") {
+                        floatingWidget.requestActivate();
+                    }
+                    focusTracker.forceActiveFocus();
+                }
             }
 
             property int configRevision: 0
@@ -220,7 +236,7 @@ Variants {
                 id: focusTracker
                 focus: true
                 onActiveFocusChanged: {
-                    if (!activeFocus && !floatingWidget.isPinned) {
+                    if (!activeFocus && !floatingWidget.isPinned && !floatingWidget.activeFocusItem) {
                         floatingWidget.isExpanded = false;
                         hideTimer.restart();
                     }
@@ -239,10 +255,41 @@ Variants {
             property var tabModules: [
                 "actions/DrawAction.qml",
                 "actions/SystemUsage.qml",
-                "actions/Timer.qml"
+                "actions/Timer.qml",
+                "actions/Notes.qml"
             ]
 
             property int tabCount: Math.max(1, tabModules.length)
+
+            function getTabInfo(index) {
+                let mod = (index >= 0 && index < tabModules.length) ? tabModules[index] : "";
+                if (mod.indexOf("Draw") !== -1) {
+                    return { name: I18n.t("quickactions.tabs.draw"), icon: "󰽉" };
+                } else if (mod.indexOf("SystemUsage") !== -1) {
+                    return { name: I18n.t("quickactions.tabs.system"), icon: "󰍛" };
+                } else if (mod.indexOf("Timer") !== -1) {
+                    return { name: I18n.t("quickactions.tabs.timer"), icon: "󰔛" };
+                } else if (mod.indexOf("Notes") !== -1) {
+                    return { name: I18n.t("quickactions.tabs.notes"), icon: "󰈙" };
+                }
+                return { name: I18n.t("quickactions.tabs.tab"), icon: "󰍜" };
+            }
+
+            function getTabName(index) {
+                return getTabInfo(index).name;
+            }
+
+            function getTabIcon(index) {
+                return getTabInfo(index).icon;
+            }
+
+            TextMetrics {
+                id: activeTabMetrics
+                font.family: ThemeBackend.fontFamily
+                font.pixelSize: floatingWidget.s(10)
+                font.weight: Font.Bold
+                text: floatingWidget.getTabName(floatingWidget.activeIndex)
+            }
 
             Connections {
                 target: FloatingController
@@ -400,11 +447,11 @@ Variants {
             property real outerCornerRadius: s(24)
             property real edgeBleed: Math.max(2, Math.ceil(s(2)))
 
-            property real h_in: s(26)
-            property real h_ac: s(86)
+            property real h_in: Math.round(s(27))
+            property real h_ac: Math.max(Math.round(s(54)), Math.round(activeTabMetrics.width + s(20)))
             property real itemSpacing: s(7)
 
-            property real buttonSize: s(18)
+            property real buttonSize: s(20)
             property real controlAreaHeight: buttonSize * 2 + s(10)
 
             property real barOffsetY: activeEdge === "left" ? (controlAreaHeight + itemSpacing) : 0
@@ -619,6 +666,10 @@ Variants {
                         floatingWidget.isExpanded = floatingWidget.pendingWasExpanded;
                         floatingWidget.isPeekVisible = false;
                         hideTimer.restart();
+                        if (typeof floatingWidget.requestActivate === "function") {
+                            floatingWidget.requestActivate();
+                        }
+                        focusTracker.forceActiveFocus();
                     } else if (floatingWidget.pendingMode === "peek") {
                         floatingWidget.isPeekVisible = true;
                         floatingWidget.isSidebarVisible = false;
@@ -647,7 +698,7 @@ Variants {
                 return floatingWidget.controlAreaHeight + controlSpacing + activeTabH + inactiveTabsH + tabsSpacing + margins;
             }
 
-            property real sidebarW: Math.round(s(31))
+            property real sidebarW: Math.round(s(35))
 
             property real sidebarTargetX: {
                 if (activeEdge === "left") {
@@ -765,6 +816,10 @@ Variants {
                 }
                 isPeekVisible = false;
                 hideTimer.restart();
+                if (typeof floatingWidget.requestActivate === "function") {
+                    floatingWidget.requestActivate();
+                }
+                focusTracker.forceActiveFocus();
             }
 
             Timer {
@@ -1279,8 +1334,8 @@ Variants {
 
                         Item {
                             anchors.fill: parent
-                            anchors.leftMargin: floatingWidget.s(4) + 1
-                            anchors.rightMargin: floatingWidget.s(4) + 1
+                            anchors.leftMargin: floatingWidget.s(4)
+                            anchors.rightMargin: floatingWidget.s(4)
                             anchors.topMargin: floatingWidget.s(6)
                             anchors.bottomMargin: floatingWidget.s(6)
 
@@ -1455,7 +1510,7 @@ Variants {
                                 x: 0
                                 width: parent.width
                                 z: 0
-                                radius: Math.min(ThemeBackend.borderRadius, width / 2)
+                                radius: width / 2
                                 color: ThemeBackend.mauve
 
                                 property int prevIdx: 0
@@ -1490,13 +1545,13 @@ Variants {
 
                                     x: 0
                                     width: parent.width
-                                    radius: Math.min(ThemeBackend.borderRadius, width / 2)
+                                    radius: width / 2
                                     z: 1
 
                                     y: floatingWidget.barOffsetY + floatingWidget.getTargetY(index, floatingWidget.activeIndex)
                                     Behavior on y { enabled: !floatingWidget.disableAnim; NumberAnimation { duration: 350; easing.type: Easing.OutExpo } }
 
-                                    height: isActive ? floatingWidget.h_ac : floatingWidget.h_in
+                                    height: isActive ? floatingWidget.h_ac : width
                                     Behavior on height { enabled: !floatingWidget.disableAnim; NumberAnimation { duration: 350; easing.type: Easing.OutExpo } }
 
                                     color: isActive ? "transparent" : (isPressed ? Qt.rgba(ThemeBackend.mauve.r, ThemeBackend.mauve.g, ThemeBackend.mauve.b, 0.4) : (isHovered ? Qt.rgba(ThemeBackend.mauve.r, ThemeBackend.mauve.g, ThemeBackend.mauve.b, 0.25) : Qt.rgba(ThemeBackend.text.r, ThemeBackend.text.g, ThemeBackend.text.b, 0.15)))
@@ -1504,6 +1559,47 @@ Variants {
 
                                     scale: isActive ? 1.0 : (isPressed ? 0.95 : (isHovered ? 1.05 : 1.0))
                                     Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutBack } }
+
+                                    Item {
+                                        id: tabIconItem
+                                        anchors.centerIn: parent
+                                        width: parent.width
+                                        height: parent.width
+                                        visible: !barPill.isActive || opacity > 0.001
+                                        opacity: barPill.isActive ? 0.0 : 1.0
+                                        Behavior on opacity { enabled: !floatingWidget.disableAnim; NumberAnimation { duration: 200 } }
+
+                                        Text {
+                                            anchors.centerIn: parent
+                                            font.family: ThemeBackend.iconFont
+                                            font.pixelSize: floatingWidget.s(14)
+                                            font.bold: true
+                                            color: barPill.isHovered ? ThemeBackend.text : ThemeBackend.subtext0
+                                            text: floatingWidget.getTabIcon(index)
+                                            rotation: floatingWidget.activeEdge === "right" ? 180 : (floatingWidget.activeEdge === "bottom" ? 90 : (floatingWidget.activeEdge === "top" ? -90 : 0))
+                                        }
+                                    }
+
+                                    Item {
+                                        id: tabNameWrapper
+                                        anchors.centerIn: parent
+                                        width: parent.width
+                                        height: parent.height
+                                        visible: barPill.isActive || opacity > 0.001
+                                        opacity: barPill.isActive ? 1.0 : 0.0
+                                        clip: true
+                                        Behavior on opacity { enabled: !floatingWidget.disableAnim; NumberAnimation { duration: 200 } }
+
+                                        Text {
+                                            anchors.centerIn: parent
+                                            text: floatingWidget.getTabName(index)
+                                            font.family: ThemeBackend.fontFamily
+                                            font.pixelSize: floatingWidget.s(10)
+                                            font.weight: Font.Bold
+                                            color: ThemeBackend.crust
+                                            rotation: (floatingWidget.activeEdge === "right" || floatingWidget.activeEdge === "top") ? 90 : -90
+                                        }
+                                    }
 
                                     MouseArea {
                                         id: barMouse

@@ -1058,6 +1058,31 @@
         "failed_title": "Export fehlgeschlagen",
         "failed_body": "Zeichnung konnte nicht gespeichert werden"
       }
+    },
+    "notes": {
+      "title": "Notizen",
+      "add_note": "Notiz hinzufügen",
+      "new_note_title": "Neue Notiz",
+      "edit_note": "Bearbeiten",
+      "preview_note": "Markdown-Vorschau",
+      "delete_selected": "Ausgewählte löschen ({count})",
+      "no_notes": "Noch keine Notizen. Klicken Sie auf „Notiz hinzufügen“.",
+      "search_placeholder": "Notizen suchen...",
+      "title_placeholder": "Notiztitel...",
+      "content_placeholder": "Notizinhalt in Markdown...",
+      "back": "Zurück",
+      "save": "Fertig",
+      "cancel": "Abbrechen",
+      "delete": "Löschen",
+      "select_all": "Alle auswählen",
+      "deselect_all": "Auswahl aufheben"
+    },
+    "tabs": {
+      "draw": "Zeichnen",
+      "system": "System",
+      "timer": "Timer",
+      "notes": "Notizen",
+      "tab": "Tab"
     }
   },
   "screenshot": {

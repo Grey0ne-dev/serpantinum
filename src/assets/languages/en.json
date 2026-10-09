@@ -1014,6 +1014,31 @@
         "failed_title": "Export failed",
         "failed_body": "Could not save drawing"
       }
+    },
+    "notes": {
+      "title": "Notes",
+      "add_note": "Add note",
+      "new_note_title": "New note",
+      "edit_note": "Edit note",
+      "preview_note": "Preview markdown",
+      "delete_selected": "Delete selected ({count})",
+      "no_notes": "No notes yet. Click \"Add note\" to create one.",
+      "search_placeholder": "Search notes...",
+      "title_placeholder": "Note title...",
+      "content_placeholder": "Write your note here in markdown...",
+      "back": "Back",
+      "save": "Done",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "select_all": "Select all",
+      "deselect_all": "Deselect"
+    },
+    "tabs": {
+      "draw": "Draw",
+      "system": "System",
+      "timer": "Timer",
+      "notes": "Notes",
+      "tab": "Tab"
     }
   },
   "screenshot": {

@@ -1014,6 +1014,31 @@
         "failed_title": "Export failed",
         "failed_body": "Could not save drawing"
       }
+    },
+    "notes": {
+      "title": "Ghi chú",
+      "add_note": "Thêm ghi chú",
+      "new_note_title": "Ghi chú mới",
+      "edit_note": "Chỉnh sửa",
+      "preview_note": "Xem trước markdown",
+      "delete_selected": "Xóa đã chọn ({count})",
+      "no_notes": "Chưa có ghi chú nào. Nhấn «Thêm ghi chú».",
+      "search_placeholder": "Tìm kiếm ghi chú...",
+      "title_placeholder": "Tiêu đề ghi chú...",
+      "content_placeholder": "Nội dung ghi chú dạng markdown...",
+      "back": "Quay lại",
+      "save": "Xong",
+      "cancel": "Hủy",
+      "delete": "Xóa",
+      "select_all": "Chọn tất cả",
+      "deselect_all": "Bỏ chọn"
+    },
+    "tabs": {
+      "draw": "Vẽ",
+      "system": "Hệ thống",
+      "timer": "Hẹn giờ",
+      "notes": "Ghi chú",
+      "tab": "Tab"
     }
   },
   "screenshot": {

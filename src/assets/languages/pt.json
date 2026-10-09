@@ -1014,6 +1014,31 @@
         "failed_title": "Falha na exportação",
         "failed_body": "Não foi possível salvar o desenho"
       }
+    },
+    "notes": {
+      "title": "Notas",
+      "add_note": "Adicionar nota",
+      "new_note_title": "Nova nota",
+      "edit_note": "Editar",
+      "preview_note": "Pré-visualizar markdown",
+      "delete_selected": "Eliminar selecionadas ({count})",
+      "no_notes": "Nenhuma nota ainda. Clique em «Adicionar nota».",
+      "search_placeholder": "Pesquisar notas...",
+      "title_placeholder": "Título da nota...",
+      "content_placeholder": "Conteúdo da nota em markdown...",
+      "back": "Voltar",
+      "save": "Concluído",
+      "cancel": "Cancelar",
+      "delete": "Eliminar",
+      "select_all": "Selecionar tudo",
+      "deselect_all": "Desmarcar tudo"
+    },
+    "tabs": {
+      "draw": "Desenho",
+      "system": "Sistema",
+      "timer": "Temporizador",
+      "notes": "Notas",
+      "tab": "Aba"
     }
   },
   "screenshot": {

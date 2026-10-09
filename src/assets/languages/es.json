@@ -1058,6 +1058,31 @@
         "failed_title": "Error al exportar",
         "failed_body": "No se pudo guardar el dibujo"
       }
+    },
+    "notes": {
+      "title": "Notas",
+      "add_note": "Añadir nota",
+      "new_note_title": "Nueva nota",
+      "edit_note": "Editar",
+      "preview_note": "Vista previa markdown",
+      "delete_selected": "Eliminar seleccionadas ({count})",
+      "no_notes": "Aún no hay notas. Haz clic en «Añadir nota».",
+      "search_placeholder": "Buscar notas...",
+      "title_placeholder": "Título de la nota...",
+      "content_placeholder": "Contenido de la nota en markdown...",
+      "back": "Atrás",
+      "save": "Listo",
+      "cancel": "Cancelar",
+      "delete": "Eliminar",
+      "select_all": "Seleccionar todo",
+      "deselect_all": "Deseleccionar"
+    },
+    "tabs": {
+      "draw": "Dibujo",
+      "system": "Sistema",
+      "timer": "Temporizador",
+      "notes": "Notas",
+      "tab": "Pestaña"
     }
   },
   "screenshot": {

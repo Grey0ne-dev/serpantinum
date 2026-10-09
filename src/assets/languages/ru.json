@@ -1058,6 +1058,31 @@
         "failed_title": "Ошибка экспорта",
         "failed_body": "Не удалось сохранить рисунок"
       }
+    },
+    "notes": {
+      "title": "Заметки",
+      "add_note": "Добавить заметку",
+      "new_note_title": "Новая заметка",
+      "edit_note": "Редактировать",
+      "preview_note": "Просмотр markdown",
+      "delete_selected": "Удалить выбранные ({count})",
+      "no_notes": "Заметок пока нет. Нажмите «Добавить заметку».",
+      "search_placeholder": "Поиск заметок...",
+      "title_placeholder": "Заголовок заметки...",
+      "content_placeholder": "Текст заметки в формате markdown...",
+      "back": "Назад",
+      "save": "Готово",
+      "cancel": "Отмена",
+      "delete": "Удалить",
+      "select_all": "Выбрать все",
+      "deselect_all": "Снять выбор"
+    },
+    "tabs": {
+      "draw": "Рисование",
+      "system": "Система",
+      "timer": "Таймер",
+      "notes": "Заметки",
+      "tab": "Вкладка"
     }
   },
   "screenshot": {
