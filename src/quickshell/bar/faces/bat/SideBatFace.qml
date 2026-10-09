@@ -85,21 +85,43 @@ Item {
     readonly property bool isCharging: isPreview ? false : (UPower.displayDevice.ready && (UPower.displayDevice.state === UPowerDeviceState.Charging || UPower.displayDevice.state === UPowerDeviceState.FullyCharged))
     readonly property string batIcon: isDesktop ? "󰐥" : (isCharging ? "󰂄" : (batCap > 20 ? "󰁹" : "󰂃"))
 
+    property real wavePhase: 0.8
+
+    Timer {
+        id: waveSettleTimer
+        interval: 1800
+        repeat: false
+        onTriggered: {
+            if (!root.isCharging) waveAnimation.stop();
+        }
+    }
+
+    NumberAnimation {
+        id: waveAnimation
+        target: root
+        property: "wavePhase"
+        from: 0
+        to: Math.PI * 2
+        duration: root.isCharging ? 1200 : 2200
+        loops: Animation.Infinite
+        running: root.visible && (!root.isDesktop) && (typeof batBtn !== "undefined" && batBtn ? (batBtn.fillRatio > 0.0 && batBtn.fillRatio < 1.0) : false) && root.isCharging
+    }
+
     onIsChargingChanged: {
-        if (isCharging && visible && !isDesktop && batBtn.fillRatio > 0.0 && batBtn.fillRatio < 1.0) {
-            batBtn.waveSettleTimer.stop();
-            batBtn.waveAnimation.start();
+        if (isCharging && visible && !isDesktop && typeof batBtn !== "undefined" && batBtn && batBtn.fillRatio > 0.0 && batBtn.fillRatio < 1.0) {
+            waveSettleTimer.stop();
+            waveAnimation.start();
         } else if (!isCharging) {
-            batBtn.waveSettleTimer.restart();
+            waveSettleTimer.restart();
         }
     }
 
     onVisibleChanged: {
         if (!visible) {
-            batBtn.waveAnimation.stop();
-            batBtn.waveSettleTimer.stop();
-        } else if (isCharging && !isDesktop && batBtn.fillRatio > 0.0 && batBtn.fillRatio < 1.0) {
-            batBtn.waveAnimation.start();
+            waveAnimation.stop();
+            waveSettleTimer.stop();
+        } else if (isCharging && !isDesktop && typeof batBtn !== "undefined" && batBtn && batBtn.fillRatio > 0.0 && batBtn.fillRatio < 1.0) {
+            waveAnimation.start();
         }
     }
 
@@ -198,30 +220,9 @@ Item {
 
             readonly property real maxWaveAmp: root.isCharging ? root.s(4.5) : root.s(2.5)
             readonly property real waveAmp: (fillRatio < 0.99 && fillRatio > 0.01) ? maxWaveAmp * Math.sin(fillRatio * Math.PI) : 0
-            property real wavePhase: 0.8
-
-            Timer {
-                id: waveSettleTimer
-                interval: 1800
-                repeat: false
-                onTriggered: {
-                    if (!root.isCharging) waveAnimation.stop();
-                }
-            }
-
-            NumberAnimation {
-                id: waveAnimation
-                target: batBtn
-                property: "wavePhase"
-                from: 0
-                to: Math.PI * 2
-                duration: root.isCharging ? 1200 : 2200
-                loops: Animation.Infinite
-                running: root.visible && (!root.isDesktop) && batBtn.fillRatio > 0.0 && batBtn.fillRatio < 1.0 && root.isCharging
-            }
 
             onFillRatioChanged: {
-                if (root.visible && (!root.isDesktop) && batBtn.fillRatio > 0.0 && batBtn.fillRatio < 1.0) {
+                if (root.visible && (!root.isDesktop) && fillRatio > 0.0 && fillRatio < 1.0) {
                     if (!waveAnimation.running) waveAnimation.start();
                     if (!root.isCharging) waveSettleTimer.restart();
                 }
@@ -247,7 +248,7 @@ Item {
                 radius: batBtn.radius
                 fillLevel: batBtn.fillRatio
                 waveAmp: (batBtn.fillRatio < 0.99 && batBtn.waveAmp > 0) ? Math.min(batBtn.waveAmp, Math.min(height * batBtn.fillRatio, height * (1.0 - batBtn.fillRatio))) : 0
-                phase: batBtn.wavePhase
+                phase: root.wavePhase
                 vertical: 1.0
                 color1: (root.batStyle === "minimal") ? root.calmBatFillColor : Qt.lighter(batBtn.accentColor, 1.20)
                 color2: (root.batStyle === "minimal") ? root.calmBatFillColor : batBtn.accentColor

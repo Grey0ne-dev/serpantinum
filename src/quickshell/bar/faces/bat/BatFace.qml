@@ -82,25 +82,48 @@ Item {
     property bool isDesktop: isPreview ? false : (UPower.displayDevice.ready ? !UPower.displayDevice.isLaptopBattery : SystemInfo.isDesktop)
     readonly property int batCap: isPreview ? 82 : (UPower.displayDevice.ready ? Math.round(UPower.displayDevice.percentage * 100) : 0)
     readonly property string batPercent: batCap + "%"
+    readonly property bool isCharging: isPreview ? false : (UPower.displayDevice.ready && (UPower.displayDevice.state === UPowerDeviceState.Charging || UPower.displayDevice.state === UPowerDeviceState.FullyCharged))
 
     readonly property string batStatus: isPreview ? "Discharging" : (UPower.displayDevice.ready ? (UPower.displayDevice.state === UPowerDeviceState.FullyCharged ? "Full" : (UPower.displayDevice.state === UPowerDeviceState.Charging ? "Charging" : "Unknown")) : "Unknown")
     readonly property string batIcon: isDesktop ? "󰐥" : (isCharging ? "󰂄" : (batCap > 20 ? "󰁹" : "󰂃"))
 
+    property real wavePhase: 0.8
+
+    Timer {
+        id: waveSettleTimer
+        interval: 1800
+        repeat: false
+        onTriggered: {
+            if (!root.isCharging) waveAnimation.stop();
+        }
+    }
+
+    NumberAnimation {
+        id: waveAnimation
+        target: root
+        property: "wavePhase"
+        from: 0
+        to: Math.PI * 2
+        duration: root.isCharging ? 1200 : 2200
+        loops: Animation.Infinite
+        running: root.visible && (!root.isDesktop) && (typeof batPill !== "undefined" && batPill ? (batPill.fillRatio > 0.0 && batPill.fillRatio < 1.0) : false) && root.isCharging
+    }
+
     onIsChargingChanged: {
-        if (isCharging && visible && !isDesktop && batPill.fillRatio > 0.0 && batPill.fillRatio < 1.0) {
-            batPill.waveSettleTimer.stop();
-            batPill.waveAnimation.start();
+        if (isCharging && visible && !isDesktop && typeof batPill !== "undefined" && batPill && batPill.fillRatio > 0.0 && batPill.fillRatio < 1.0) {
+            waveSettleTimer.stop();
+            waveAnimation.start();
         } else if (!isCharging) {
-            batPill.waveSettleTimer.restart();
+            waveSettleTimer.restart();
         }
     }
 
     onVisibleChanged: {
         if (!visible) {
-            batPill.waveAnimation.stop();
-            batPill.waveSettleTimer.stop();
-        } else if (isCharging && !isDesktop && batPill.fillRatio > 0.0 && batPill.fillRatio < 1.0) {
-            batPill.waveAnimation.start();
+            waveAnimation.stop();
+            waveSettleTimer.stop();
+        } else if (isCharging && !isDesktop && typeof batPill !== "undefined" && batPill && batPill.fillRatio > 0.0 && batPill.fillRatio < 1.0) {
+            waveAnimation.start();
         }
     }
 
@@ -167,30 +190,8 @@ Item {
 
             readonly property real maxWaveAmp: root.isCharging ? root.s(4.5) : root.s(2.5)
             readonly property real waveAmp: (fillRatio < 0.99 && fillRatio > 0.01) ? maxWaveAmp * Math.sin(fillRatio * Math.PI) : 0
-            property real wavePhase: 0.8
-
-            Timer {
-                id: waveSettleTimer
-                interval: 1800
-                repeat: false
-                onTriggered: {
-                    if (!root.isCharging) waveAnimation.stop();
-                }
-            }
-
-            NumberAnimation {
-                id: waveAnimation
-                target: batPill
-                property: "wavePhase"
-                from: 0
-                to: Math.PI * 2
-                duration: root.isCharging ? 1200 : 2200
-                loops: Animation.Infinite
-                running: root.visible && (!root.isDesktop) && batPill.fillRatio > 0.0 && batPill.fillRatio < 1.0 && root.isCharging
-            }
-
             onFillRatioChanged: {
-                if (root.visible && (!root.isDesktop) && batPill.fillRatio > 0.0 && batPill.fillRatio < 1.0) {
+                if (root.visible && (!root.isDesktop) && fillRatio > 0.0 && fillRatio < 1.0) {
                     if (!waveAnimation.running) waveAnimation.start();
                     if (!root.isCharging) waveSettleTimer.restart();
                 }
@@ -256,7 +257,7 @@ Item {
                 radius: batPill.radius
                 fillLevel: batPill.fillRatio
                 waveAmp: (batPill.fillRatio < 0.99 && batPill.waveAmp > 0) ? Math.min(batPill.waveAmp, Math.min(width * batPill.fillRatio, width * (1.0 - batPill.fillRatio))) : 0
-                phase: batPill.wavePhase
+                phase: root.wavePhase
                 vertical: 0.0
                 color1: (root.batStyle === "minimal") ? root.calmBatFillColor : Qt.lighter(batPill.accentColor, 1.20)
                 color2: (root.batStyle === "minimal") ? root.calmBatFillColor : batPill.accentColor
