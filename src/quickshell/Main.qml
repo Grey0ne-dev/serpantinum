@@ -315,8 +315,6 @@ PanelWindow {
 
     property var widgetCache: ({})
     property var componentCache: ({})
-    property var _allWidgetNames: ["battery", "network", "volume", "guide", "calendar", "wallpaper", "music", "movies", "notifications", "system"]
-    property int _preloadIndex: 0
 
     function widgetNameForItem(item) {
         for (let name in widgetCache) {
@@ -347,37 +345,13 @@ PanelWindow {
         return item;
     }
 
-    function preloadWidget(name) {
-        let t = getLayout(name);
-        if (!t || !t.comp) return;
-        ensureWidgetItem(name, t);
-    }
-
     Component.onCompleted: {
         reportWidgetState();
-        preloadStaggerTimer.start();
     }
 
     Component.onDestruction: {
         if (typeof Caching !== "undefined" && Caching.runDir) {
             Quickshell.execDetached(["bash", "-c", "echo '{\"widget\":\"hidden\",\"screen\":\"\"}' > " + Caching.runDir + "/current_widget"]);
-        }
-    }
-
-    Timer {
-        id: preloadStaggerTimer
-        interval: 150
-        repeat: true
-        onTriggered: {
-            if (masterWindow._preloadIndex >= masterWindow._allWidgetNames.length) {
-                preloadStaggerTimer.stop();
-                return;
-            }
-            if (masterWindow.currentActive !== "hidden") {
-                return;
-            }
-            preloadWidget(masterWindow._allWidgetNames[masterWindow._preloadIndex]);
-            masterWindow._preloadIndex++;
         }
     }
 
