@@ -759,6 +759,11 @@ PanelWindow {
                 border.color: Qt.rgba(ThemeBackend.text.r, ThemeBackend.text.g, ThemeBackend.text.b, 0.08)
                 border.width: s(1)
                 radius: ThemeBackend.borderRadius
+
+                MouseArea {
+                    anchors.fill: parent
+                    acceptedButtons: Qt.LeftButton | Qt.RightButton
+                }
             }
 
             Rectangle {
@@ -985,7 +990,9 @@ PanelWindow {
                         iconFontSize: s(18)
                         accentColor: audioCtrl.sliderOpen ? ThemeBackend.surface1 : ThemeBackend.surface0
                         textColor: audioCtrl.mutedValue ? ThemeBackend.red : (audioCtrl.sliderOpen ? ThemeBackend.mauve : ThemeBackend.text)
+                        acceptedButtons: Qt.LeftButton | Qt.RightButton
                         onClicked: audioCtrl.toggleSlider()
+                        onRightClicked: audioCtrl.muteUpdate(!audioCtrl.mutedValue)
                     }
 
                     Item {
@@ -1003,6 +1010,12 @@ PanelWindow {
                         Behavior on opacity {
                             enabled: root.animateChanges && !root.isRefreezing
                             NumberAnimation { duration: 500; easing.type: Easing.OutExpo }
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            acceptedButtons: Qt.RightButton
+                            onClicked: audioCtrl.muteUpdate(!audioCtrl.mutedValue)
                         }
 
                         Draggable {
