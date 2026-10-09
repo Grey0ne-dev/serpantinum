@@ -47,13 +47,51 @@ Item {
     readonly property real maxWaveAmp: isCharging ? Scaler.s(10) : Scaler.s(6.5)
     readonly property real waveAmp: (fillLevel < 0.99 && fillLevel > 0.01) ? maxWaveAmp * Math.sin(fillLevel * Math.PI) : 0
 
-    property real wavePhase: 0.0
-    NumberAnimation on wavePhase {
-        running: root.visible && root.hasBattery && root.fillLevel > 0.0 && root.fillLevel < 1.0
-        loops: Animation.Infinite
+    property real wavePhase: 0.8
+
+    Timer {
+        id: waveSettleTimer
+        interval: 1800
+        repeat: false
+        onTriggered: {
+            if (!root.isCharging) waveAnimation.stop();
+        }
+    }
+
+    NumberAnimation {
+        id: waveAnimation
+        target: root
+        property: "wavePhase"
         from: 0
         to: Math.PI * 2
         duration: root.isCharging ? 1200 : 2200
+        loops: Animation.Infinite
+        running: root.visible && root.hasBattery && root.fillLevel > 0.0 && root.fillLevel < 1.0 && root.isCharging
+    }
+
+    onAnimCapacityChanged: {
+        if (root.visible && root.hasBattery && root.fillLevel > 0.0 && root.fillLevel < 1.0) {
+            if (!waveAnimation.running) waveAnimation.start();
+            if (!root.isCharging) waveSettleTimer.restart();
+        }
+    }
+
+    onVisibleChanged: {
+        if (!visible) {
+            waveAnimation.stop();
+            waveSettleTimer.stop();
+        } else if (isCharging && hasBattery && fillLevel > 0.0 && fillLevel < 1.0) {
+            waveAnimation.start();
+        }
+    }
+
+    onIsChargingChanged: {
+        if (isCharging && visible && hasBattery && fillLevel > 0.0 && fillLevel < 1.0) {
+            waveSettleTimer.stop();
+            waveAnimation.start();
+        } else if (!isCharging) {
+            waveSettleTimer.restart();
+        }
     }
 
     readonly property string timeString: {

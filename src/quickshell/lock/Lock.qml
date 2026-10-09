@@ -711,10 +711,6 @@ Scope {
                         updateCavaConsumer();
                     }
 
-                    property real globalWavePhase: 0.0
-                    NumberAnimation on globalWavePhase {
-                        from: 0; to: Math.PI * 2; duration: 1800; loops: Animation.Infinite; running: screenRoot.wingsReveal > 0.98
-                    }
 
                     property real rawCpu: isNaN(SysData.cpu) ? 0.0 : SysData.cpu / 100.0
                     property real cpuUsage: rawCpu
@@ -1805,7 +1801,6 @@ Scope {
                                     icon: "\uF2DB"
                                     title: I18n.t("quickactions.systemusage.cpu")
                                     valueText: Math.round(screenRoot.cpuUsage * 100) + "%"
-                                    wavePhase: screenRoot.globalWavePhase
                                     isLive: screenRoot.wingsReveal > 0.98
                                     hasShadow: true
                                     compact: true
@@ -1822,7 +1817,6 @@ Scope {
                                     icon: "\uF538"
                                     title: I18n.t("quickactions.systemusage.ram")
                                     valueText: screenRoot.ramUsedGb.toFixed(1) + "G"
-                                    wavePhase: screenRoot.globalWavePhase
                                     isLive: screenRoot.wingsReveal > 0.98
                                     hasShadow: true
                                     compact: true
@@ -1839,7 +1833,6 @@ Scope {
                                     icon: "\uF2C9"
                                     title: I18n.t("quickactions.systemusage.temp")
                                     valueText: Math.round(screenRoot.tempC) + "°"
-                                    wavePhase: screenRoot.globalWavePhase
                                     isLive: screenRoot.wingsReveal > 0.98
                                     hasShadow: true
                                     compact: true
@@ -1857,7 +1850,6 @@ Scope {
                                     title: screenRoot.diskTotalText
                                     subText: screenRoot.diskUsedText
                                     valueText: Math.round(screenRoot.diskUsagePercent * 100) + "%"
-                                    wavePhase: screenRoot.globalWavePhase
                                     isLive: screenRoot.wingsReveal > 0.98
                                     hasShadow: true
                                     compact: true
@@ -1874,7 +1866,6 @@ Scope {
                                     icon: "󰤨"
                                     title: I18n.t("quickactions.systemusage.net")
                                     valueText: ""
-                                    wavePhase: screenRoot.globalWavePhase
                                     isLive: screenRoot.wingsReveal > 0.98
                                     hasShadow: true
                                     compact: true
