@@ -315,6 +315,12 @@ FocusScope {
     }
 
     TapHandler {
+        onPressedChanged: {
+            if (pressed) {
+                root.forceInputFocus();
+                root.clicked();
+            }
+        }
         onTapped: {
             root.forceInputFocus();
             root.clicked();
@@ -547,6 +553,19 @@ FocusScope {
                 boundsBehavior: Flickable.StopAtBounds
                 clip: true
 
+                TapHandler {
+                    onPressedChanged: {
+                        if (pressed) {
+                            root.forceInputFocus();
+                            root.clicked();
+                        }
+                    }
+                    onTapped: {
+                        root.forceInputFocus();
+                        root.clicked();
+                    }
+                }
+
                 ScrollBar.vertical: ScrollBar {
                     active: multiFlickable.moving || multiFlickable.movingVertically
                     width: 4
@@ -571,6 +590,7 @@ FocusScope {
                 TextEdit {
                     id: innerTextEdit
                     width: multiFlickable.width
+                    height: Math.max(multiFlickable.height, contentHeight)
                     focus: root.multiLine
                     color: root.textColor
                     font.family: root.fontFamily

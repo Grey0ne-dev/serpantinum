@@ -1023,6 +1023,18 @@ Item {
                             Layout.fillWidth: true
                             Layout.fillHeight: true
 
+                            TapHandler {
+                                enabled: !root.isMarkdownPreview
+                                onPressedChanged: {
+                                    if (pressed) {
+                                        contentInput.forceInputFocus();
+                                    }
+                                }
+                                onTapped: {
+                                    contentInput.forceInputFocus();
+                                }
+                            }
+
                             Input {
                                 id: contentInput
                                 anchors.fill: parent
