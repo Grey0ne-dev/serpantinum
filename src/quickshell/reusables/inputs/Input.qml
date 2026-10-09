@@ -147,6 +147,15 @@ FocusScope {
         }
     }
 
+    function releaseFocus() {
+        if (root.multiLine) {
+            innerTextEdit.focus = false;
+        } else {
+            innerInput.focus = false;
+        }
+        root.focus = false;
+    }
+
     function triggerShake() {
         shakeAnim.restart();
         if (typeof Sounds !== "undefined") {
