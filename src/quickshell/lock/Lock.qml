@@ -801,8 +801,8 @@ Scope {
                         function onResumeRevisionChanged() {
                             if (rootLock.locked && !screenRoot.isUnlocking) {
                                 screenRoot.restoreFocus();
-                                if (typeof clockModule !== "undefined" && clockModule.updateClock) {
-                                    clockModule.updateClock();
+                                if (typeof clockModule !== "undefined") {
+                                    clockModule.currentTime = (typeof DateTime !== "undefined" && DateTime.now) ? DateTime.now : new Date();
                                 }
                             }
                         }
@@ -1054,10 +1054,6 @@ Scope {
                                 readonly property bool is12h: timeFormat.includes("h") || timeFormat.toLowerCase().includes("ap")
                                 readonly property string hourFmt: is12h ? (timeFormat.includes("hh") ? "hh" : "h") : (timeFormat.includes("H") && !timeFormat.includes("HH") ? "H" : "HH")
 
-                                Component.onCompleted: {
-                                    updateClock();
-                                }
-
                                 Behavior on anchors.verticalCenterOffset { NumberAnimation { duration: 320; easing.type: Easing.OutCubic } }
                                 Behavior on opacity { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
                                 Behavior on scale { NumberAnimation { duration: 220; easing.type: Easing.OutCubic } }
@@ -1179,24 +1175,6 @@ Scope {
                                         color: Qt.rgba(0, 0, 0, 0.16)
                                         text: parent.text
                                         z: -1
-                                    }
-                                }
-
-                                function updateClock() {
-                                    clockModule.currentTime = (typeof DateTime !== "undefined" && DateTime.now) ? DateTime.now : new Date();
-                                    let sec = clockModule.currentTime.getSeconds();
-                                    let ms = clockModule.currentTime.getMilliseconds();
-                                    let msToNextMinute = ((60 - sec) * 1000) - ms;
-                                    clockTimer.interval = Math.max(500, msToNextMinute + 50);
-                                }
-
-                                Timer {
-                                    id: clockTimer
-                                    interval: 1000
-                                    running: rootLock.locked && !screenRoot.isUnlocking
-                                    repeat: true
-                                    onTriggered: {
-                                        clockModule.updateClock();
                                     }
                                 }
 
