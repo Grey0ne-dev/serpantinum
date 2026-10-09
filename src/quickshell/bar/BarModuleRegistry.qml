@@ -157,23 +157,77 @@ QtObject {
         "wifi": {
             name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.network", "Network") : "Network",
             icon: "󰤨",
-            defaultVariant: "default",
+            defaultVariant: "button",
             horizontalFace: "faces/wifi/WifiFace.qml",
-            verticalFace: "faces/wifi/SideWifiFace.qml"
+            verticalFace: "faces/wifi/SideWifiFace.qml",
+            variants: {
+                "button": {
+                    id: "button",
+                    name: typeof I18n !== "undefined" ? I18n.t("guide.bar.wifi.style.name.button", "Button") : "Button",
+                    desc: typeof I18n !== "undefined" ? I18n.t("guide.bar.wifi.style.button", "Interactive button pill with background") : "Interactive button pill with background",
+                    icon: "󰤨",
+                    horizontalFace: "faces/wifi/WifiFace.qml",
+                    verticalFace: "faces/wifi/SideWifiFace.qml"
+                },
+                "text": {
+                    id: "text",
+                    name: typeof I18n !== "undefined" ? I18n.t("guide.bar.wifi.style.name.text", "Text") : "Text",
+                    desc: typeof I18n !== "undefined" ? I18n.t("guide.bar.wifi.style.text", "Clean text and icon without background") : "Clean text and icon without background",
+                    icon: "󰤨",
+                    horizontalFace: "faces/wifi/WifiFace.qml",
+                    verticalFace: "faces/wifi/SideWifiFace.qml"
+                }
+            }
         },
         "bt": {
             name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.bluetooth", "Bluetooth") : "Bluetooth",
             icon: "󰂲",
-            defaultVariant: "default",
+            defaultVariant: "button",
             horizontalFace: "faces/bt/BtFace.qml",
-            verticalFace: "faces/bt/SideBtFace.qml"
+            verticalFace: "faces/bt/SideBtFace.qml",
+            variants: {
+                "button": {
+                    id: "button",
+                    name: typeof I18n !== "undefined" ? I18n.t("guide.bar.bt.style.name.button", "Button") : "Button",
+                    desc: typeof I18n !== "undefined" ? I18n.t("guide.bar.bt.style.button", "Interactive button pill with background") : "Interactive button pill with background",
+                    icon: "󰂲",
+                    horizontalFace: "faces/bt/BtFace.qml",
+                    verticalFace: "faces/bt/SideBtFace.qml"
+                },
+                "text": {
+                    id: "text",
+                    name: typeof I18n !== "undefined" ? I18n.t("guide.bar.bt.style.name.text", "Text") : "Text",
+                    desc: typeof I18n !== "undefined" ? I18n.t("guide.bar.bt.style.text", "Clean text and icon without background") : "Clean text and icon without background",
+                    icon: "󰂲",
+                    horizontalFace: "faces/bt/BtFace.qml",
+                    verticalFace: "faces/bt/SideBtFace.qml"
+                }
+            }
         },
         "vol": {
             name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.volume", "Volume") : "Volume",
             icon: "󰕾",
-            defaultVariant: "default",
+            defaultVariant: "button",
             horizontalFace: "faces/vol/VolFace.qml",
-            verticalFace: "faces/vol/SideVolFace.qml"
+            verticalFace: "faces/vol/SideVolFace.qml",
+            variants: {
+                "button": {
+                    id: "button",
+                    name: typeof I18n !== "undefined" ? I18n.t("guide.bar.vol.style.name.button", "Button") : "Button",
+                    desc: typeof I18n !== "undefined" ? I18n.t("guide.bar.vol.style.button", "Interactive button pill with background") : "Interactive button pill with background",
+                    icon: "󰕾",
+                    horizontalFace: "faces/vol/VolFace.qml",
+                    verticalFace: "faces/vol/SideVolFace.qml"
+                },
+                "text": {
+                    id: "text",
+                    name: typeof I18n !== "undefined" ? I18n.t("guide.bar.vol.style.name.text", "Text") : "Text",
+                    desc: typeof I18n !== "undefined" ? I18n.t("guide.bar.vol.style.text", "Clean text and icon without background") : "Clean text and icon without background",
+                    icon: "󰕾",
+                    horizontalFace: "faces/vol/VolFace.qml",
+                    verticalFace: "faces/vol/SideVolFace.qml"
+                }
+            }
         },
         "bat": {
             name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.battery", "Battery") : "Battery",
@@ -218,6 +272,24 @@ QtObject {
             if (isSide && bs.sideTimeStyle) return bs.sideTimeStyle;
             if (bs.timeStyle) return bs.timeStyle;
             return "classic";
+        }
+        if (norm === "wifi") {
+            if (isSide && ss.wifiStyle) return ss.wifiStyle;
+            if (isSide && bs.sideWifiStyle) return bs.sideWifiStyle;
+            if (bs.wifiStyle) return bs.wifiStyle;
+            return "button";
+        }
+        if (norm === "bt") {
+            if (isSide && ss.btStyle) return ss.btStyle;
+            if (isSide && bs.sideBtStyle) return bs.sideBtStyle;
+            if (bs.btStyle) return bs.btStyle;
+            return "button";
+        }
+        if (norm === "vol") {
+            if (isSide && ss.volStyle) return ss.volStyle;
+            if (isSide && bs.sideVolStyle) return bs.sideVolStyle;
+            if (bs.volStyle) return bs.volStyle;
+            return "button";
         }
         if (norm === "bat") {
             if (isSide && ss.batStyle) return ss.batStyle;

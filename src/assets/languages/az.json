@@ -449,6 +449,66 @@
           "classic": "Qradiyent dalğalı kapsul",
           "minimal": "iOS/Android tərzində qapaqlı kapsul"
         }
+      },
+      "wifi": {
+        "show_icon": {
+          "title": "İkonu göstər",
+          "desc": "Şəbəkə ikonunu və ya siqnal göstəricisini göstər"
+        },
+        "show_name": {
+          "title": "Adı göstər",
+          "desc": "Şəbəkə SSID və ya qoşulma statusunu göstər"
+        },
+        "style": {
+          "title": "Stil",
+          "desc": "Şəbəkə modulunun vizual görünüşünü seçin",
+          "name": {
+            "button": "Düymə",
+            "text": "Mətn"
+          },
+          "button": "Arxa planlı interaktiv düymə",
+          "text": "Arxa plansız sadə mətn və ikon"
+        }
+      },
+      "bt": {
+        "show_icon": {
+          "title": "İkonu göstər",
+          "desc": "Bluetooth status ikonunu göstər"
+        },
+        "show_name": {
+          "title": "Adı göstər",
+          "desc": "Qoşulmuş Bluetooth cihazının adını göstər"
+        },
+        "style": {
+          "title": "Stil",
+          "desc": "Bluetooth modulunun vizual görünüşünü seçin",
+          "name": {
+            "button": "Düymə",
+            "text": "Mətn"
+          },
+          "button": "Arxa planlı interaktiv düymə",
+          "text": "Arxa plansız sadə mətn və ikon"
+        }
+      },
+      "vol": {
+        "show_icon": {
+          "title": "İkonu göstər",
+          "desc": "Səs dinamiki ikonunu göstər"
+        },
+        "show_percent": {
+          "title": "Faizi göstər",
+          "desc": "Səs səviyyəsinin faizini rəqəmlə göstər"
+        },
+        "style": {
+          "title": "Stil",
+          "desc": "Səs modulunun vizual görünüşünü seçin",
+          "name": {
+            "button": "Düymə",
+            "text": "Mətn"
+          },
+          "button": "Arxa planlı interaktiv düymə",
+          "text": "Arxa plansız sadə mətn və ikon"
+        }
       }
     },
     "theme": {

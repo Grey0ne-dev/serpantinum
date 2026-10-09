@@ -451,6 +451,66 @@
           "classic": "Dạng viên thuốc với sóng chuyển màu",
           "minimal": "Dạng thỏi iOS/Android có nắp"
         }
+      },
+      "wifi": {
+        "show_icon": {
+          "title": "Hiển thị biểu tượng",
+          "desc": "Hiển thị biểu tượng mạng hoặc chỉ báo tín hiệu"
+        },
+        "show_name": {
+          "title": "Hiển thị tên",
+          "desc": "Hiển thị SSID mạng hoặc trạng thái kết nối"
+        },
+        "style": {
+          "title": "Kiểu dáng",
+          "desc": "Chọn giao diện trực quan của mô-đun mạng",
+          "name": {
+            "button": "Nút bấm",
+            "text": "Văn bản"
+          },
+          "button": "Nút tương tác có nền",
+          "text": "Biểu tượng và văn bản không có nền"
+        }
+      },
+      "bt": {
+        "show_icon": {
+          "title": "Hiển thị biểu tượng",
+          "desc": "Hiển thị biểu tượng trạng thái Bluetooth"
+        },
+        "show_name": {
+          "title": "Hiển thị tên",
+          "desc": "Hiển thị tên thiết bị Bluetooth đã kết nối"
+        },
+        "style": {
+          "title": "Kiểu dáng",
+          "desc": "Chọn giao diện trực quan của mô-đun Bluetooth",
+          "name": {
+            "button": "Nút bấm",
+            "text": "Văn bản"
+          },
+          "button": "Nút tương tác có nền",
+          "text": "Biểu tượng và văn bản không có nền"
+        }
+      },
+      "vol": {
+        "show_icon": {
+          "title": "Hiển thị biểu tượng",
+          "desc": "Hiển thị biểu tượng loa âm lượng"
+        },
+        "show_percent": {
+          "title": "Hiển thị phần trăm",
+          "desc": "Hiển thị phần trăm âm lượng dạng số"
+        },
+        "style": {
+          "title": "Kiểu dáng",
+          "desc": "Chọn giao diện trực quan của mô-đun âm lượng",
+          "name": {
+            "button": "Nút bấm",
+            "text": "Văn bản"
+          },
+          "button": "Nút tương tác có nền",
+          "text": "Biểu tượng và văn bản không có nền"
+        }
       }
     },
     "theme": {

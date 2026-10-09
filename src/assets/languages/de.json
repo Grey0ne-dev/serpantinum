@@ -452,6 +452,66 @@
           "classic": "Pille mit Farbverlaufswelle",
           "minimal": "iOS/Android-Kapsel mit Kappe"
         }
+      },
+      "wifi": {
+        "show_icon": {
+          "title": "Symbol anzeigen",
+          "desc": "Netzwerksymbol oder Signalanzeige anzeigen"
+        },
+        "show_name": {
+          "title": "Name anzeigen",
+          "desc": "Netzwerk-SSID oder Verbindungsstatustext anzeigen"
+        },
+        "style": {
+          "title": "Stil",
+          "desc": "Wählen Sie das visuelle Erscheinungsbild des Netzwerkmoduls",
+          "name": {
+            "button": "Schaltfläche",
+            "text": "Text"
+          },
+          "button": "Interaktive Pillen-Schaltfläche mit Hintergrund",
+          "text": "Kompakter Text und Symbol ohne Hintergrund"
+        }
+      },
+      "bt": {
+        "show_icon": {
+          "title": "Symbol anzeigen",
+          "desc": "Bluetooth-Statussymbol anzeigen"
+        },
+        "show_name": {
+          "title": "Name anzeigen",
+          "desc": "Name des verbundenen Bluetooth-Geräts anzeigen"
+        },
+        "style": {
+          "title": "Stil",
+          "desc": "Wählen Sie das visuelle Erscheinungsbild des Bluetooth-Moduls",
+          "name": {
+            "button": "Schaltfläche",
+            "text": "Text"
+          },
+          "button": "Interaktive Pillen-Schaltfläche mit Hintergrund",
+          "text": "Kompakter Text und Symbol ohne Hintergrund"
+        }
+      },
+      "vol": {
+        "show_icon": {
+          "title": "Symbol anzeigen",
+          "desc": "Lautsprecher-Symbol anzeigen"
+        },
+        "show_percent": {
+          "title": "Prozent anzeigen",
+          "desc": "Numerische Lautstärke in Prozent anzeigen"
+        },
+        "style": {
+          "title": "Stil",
+          "desc": "Wählen Sie das visuelle Erscheinungsbild des Lautstärkemoduls",
+          "name": {
+            "button": "Schaltfläche",
+            "text": "Text"
+          },
+          "button": "Interaktive Pillen-Schaltfläche mit Hintergrund",
+          "text": "Kompakter Text und Symbol ohne Hintergrund"
+        }
       }
     },
     "theme": {

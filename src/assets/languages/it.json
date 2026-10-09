@@ -450,6 +450,66 @@
           "classic": "Pillola con onda a gradiente",
           "minimal": "Capsula in stile iOS/Android con cappuccio"
         }
+      },
+      "wifi": {
+        "show_icon": {
+          "title": "Mostra icona",
+          "desc": "Mostra l'icona di rete o l'indicatore del segnale"
+        },
+        "show_name": {
+          "title": "Mostra nome",
+          "desc": "Mostra l'SSID di rete o il testo dello stato di connessione"
+        },
+        "style": {
+          "title": "Stile",
+          "desc": "Scegli l'aspetto visivo del modulo di rete",
+          "name": {
+            "button": "Pulsante",
+            "text": "Testo"
+          },
+          "button": "Pulsante interattivo con sfondo",
+          "text": "Testo e icona puliti senza sfondo"
+        }
+      },
+      "bt": {
+        "show_icon": {
+          "title": "Mostra icona",
+          "desc": "Mostra l'icona di stato del Bluetooth"
+        },
+        "show_name": {
+          "title": "Mostra nome",
+          "desc": "Mostra il nome del dispositivo Bluetooth connesso"
+        },
+        "style": {
+          "title": "Stile",
+          "desc": "Scegli l'aspetto visivo del modulo Bluetooth",
+          "name": {
+            "button": "Pulsante",
+            "text": "Testo"
+          },
+          "button": "Pulsante interattivo con sfondo",
+          "text": "Testo e icona puliti senza sfondo"
+        }
+      },
+      "vol": {
+        "show_icon": {
+          "title": "Mostra icona",
+          "desc": "Mostra l'icona dell'altoparlante del volume"
+        },
+        "show_percent": {
+          "title": "Mostra percentuale",
+          "desc": "Mostra la percentuale numerica del volume"
+        },
+        "style": {
+          "title": "Stile",
+          "desc": "Scegli l'aspetto visivo del modulo volume",
+          "name": {
+            "button": "Pulsante",
+            "text": "Testo"
+          },
+          "button": "Pulsante interattivo con sfondo",
+          "text": "Testo e icona puliti senza sfondo"
+        }
       }
     },
     "theme": {
