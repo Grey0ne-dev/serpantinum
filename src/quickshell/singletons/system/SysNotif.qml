@@ -1,6 +1,7 @@
 pragma Singleton
 import QtQuick
 import Quickshell
+import Quickshell.Io
 import Quickshell.Services.UPower
 import "../../"
 
@@ -10,7 +11,14 @@ Item {
     readonly property bool isDesktop: UPower.displayDevice.ready ? !UPower.displayDevice.isLaptopBattery : (typeof SystemInfo !== "undefined" ? SystemInfo.isDesktop : true)
     readonly property int batteryPercentage: UPower.displayDevice.ready ? Math.round(UPower.displayDevice.percentage * 100) : 0
     readonly property bool isCharging: UPower.displayDevice.ready && (UPower.displayDevice.state === UPowerDeviceState.Charging || UPower.displayDevice.state === UPowerDeviceState.FullyCharged)
+    readonly property string stateFilePath: {
+        let base = (typeof Caching !== "undefined" && Caching.runDir) ? Caching.runDir : "/tmp/serpantinum";
+        return base + "/battery_notif_state.json";
+    }
 
+    property bool stateLoaded: false
+    property bool initialized: false
+    property int lastPercentage: -1
     property bool notifiedFull: false
     property bool notifiedLow: false
     property bool notifiedCritical: false
@@ -18,6 +26,46 @@ Item {
     property string lastNotifType: ""
 
     onIsDesktopChanged: root.checkBattery()
+
+    FileView {
+        id: stateFileView
+        path: root.stateFilePath
+        watchChanges: false
+        onLoaded: {
+            root.loadState();
+        }
+    }
+
+    function loadState() {
+        try {
+            let txt = typeof stateFileView.text === "function" ? stateFileView.text() : stateFileView.text;
+            if (txt && txt.trim().length > 0) {
+                let data = JSON.parse(txt);
+                if (data && typeof data === "object") {
+                    if (data.notifiedFull !== undefined) root.notifiedFull = Boolean(data.notifiedFull);
+                    if (data.notifiedLow !== undefined) root.notifiedLow = Boolean(data.notifiedLow);
+                    if (data.notifiedCritical !== undefined) root.notifiedCritical = Boolean(data.notifiedCritical);
+                    if (data.lastPercentage !== undefined) root.lastPercentage = Number(data.lastPercentage);
+                    if (data.lastNotifTime !== undefined) root.lastNotifTime = Number(data.lastNotifTime);
+                    if (data.lastNotifType !== undefined) root.lastNotifType = String(data.lastNotifType);
+                    root.stateLoaded = true;
+                }
+            }
+        } catch (e) {}
+    }
+
+    function saveState() {
+        let payload = JSON.stringify({
+            "notifiedFull": root.notifiedFull,
+            "notifiedLow": root.notifiedLow,
+            "notifiedCritical": root.notifiedCritical,
+            "lastPercentage": root.lastPercentage,
+            "lastNotifTime": root.lastNotifTime,
+            "lastNotifType": root.lastNotifType
+        });
+        let dir = (typeof Caching !== "undefined" && Caching.runDir) ? Caching.runDir : "/tmp/serpantinum";
+        Quickshell.execDetached(["bash", "-c", 'mkdir -p "$1" && printf "%s\\n" "$2" > "$3"', "_", dir, payload, root.stateFilePath]);
+    }
 
     function sendNotification(type, summary, body, icon, urgency) {
         let now = Date.now();
@@ -29,6 +77,7 @@ Item {
         }
         root.lastNotifType = type;
         root.lastNotifTime = now;
+        root.saveState();
 
         let u = urgency ? urgency : "normal";
         let ic = icon ? icon : "battery";
@@ -47,11 +96,30 @@ Item {
     function checkBattery() {
         if (root.isDesktop || !UPower.displayDevice.ready || (typeof I18n !== "undefined" && !I18n.isReady)) return;
 
+        if (!root.stateLoaded) {
+            root.loadState();
+        }
+
         let pct = root.batteryPercentage;
         let state = UPower.displayDevice.state;
         let charging = state === UPowerDeviceState.Charging || state === UPowerDeviceState.FullyCharged;
 
-        if (pct < 95) {
+        if (!root.initialized) {
+            root.initialized = true;
+            if (!root.stateLoaded) {
+                root.lastPercentage = pct;
+                if (pct >= 100) {
+                    root.notifiedFull = true;
+                }
+                root.saveState();
+            } else {
+                if (pct >= 100 && (root.lastPercentage >= 100 || root.lastPercentage === -1)) {
+                    root.notifiedFull = true;
+                }
+            }
+        }
+
+        if (pct < 100) {
             root.notifiedFull = false;
         }
 
@@ -61,7 +129,7 @@ Item {
                 root.notifiedCritical = false;
             }
 
-            if ((pct >= 100 || state === UPowerDeviceState.FullyCharged) && !root.notifiedFull) {
+            if ((pct >= 100 || state === UPowerDeviceState.FullyCharged) && !root.notifiedFull && root.lastPercentage < 100) {
                 let title = I18n.t("sysnotif.battery.full_title");
                 let body = I18n.t("sysnotif.battery.full_body");
                 if (title === "sysnotif.battery.full_title" || body === "sysnotif.battery.full_body") return;
@@ -109,6 +177,11 @@ Item {
                 root.notifiedCritical = false;
             }
         }
+
+        if (pct !== root.lastPercentage) {
+            root.lastPercentage = pct;
+            root.saveState();
+        }
     }
 
     Connections {
@@ -121,5 +194,9 @@ Item {
         function onPercentageChanged() { root.checkBattery(); }
         function onStateChanged() { root.checkBattery(); }
         function onReadyChanged() { root.checkBattery(); }
+    }
+
+    Component.onCompleted: {
+        root.loadState();
     }
 }
