@@ -85,6 +85,24 @@ Item {
     readonly property bool isCharging: isPreview ? false : (UPower.displayDevice.ready && (UPower.displayDevice.state === UPowerDeviceState.Charging || UPower.displayDevice.state === UPowerDeviceState.FullyCharged))
     readonly property string batIcon: isDesktop ? "󰐥" : (isCharging ? "󰂄" : (batCap > 20 ? "󰁹" : "󰂃"))
 
+    onIsChargingChanged: {
+        if (isCharging && visible && !isDesktop && batBtn.fillRatio > 0.0 && batBtn.fillRatio < 1.0) {
+            batBtn.waveSettleTimer.stop();
+            batBtn.waveAnimation.start();
+        } else if (!isCharging) {
+            batBtn.waveSettleTimer.restart();
+        }
+    }
+
+    onVisibleChanged: {
+        if (!visible) {
+            batBtn.waveAnimation.stop();
+            batBtn.waveSettleTimer.stop();
+        } else if (isCharging && !isDesktop && batBtn.fillRatio > 0.0 && batBtn.fillRatio < 1.0) {
+            batBtn.waveAnimation.start();
+        }
+    }
+
     property color batDynamicColor: {
         if (isDesktop) return ThemeBackend.red;
         if (isCharging) return ThemeBackend.green;
@@ -178,6 +196,37 @@ Item {
             property real fillRatio: Math.max(0.0, Math.min(1.0, isNaN(animValue) ? 0.0 : animValue))
             property real fillY: height * (1.0 - fillRatio)
 
+            readonly property real maxWaveAmp: root.isCharging ? root.s(4.5) : root.s(2.5)
+            readonly property real waveAmp: (fillRatio < 0.99 && fillRatio > 0.01) ? maxWaveAmp * Math.sin(fillRatio * Math.PI) : 0
+            property real wavePhase: 0.8
+
+            Timer {
+                id: waveSettleTimer
+                interval: 1800
+                repeat: false
+                onTriggered: {
+                    if (!root.isCharging) waveAnimation.stop();
+                }
+            }
+
+            NumberAnimation {
+                id: waveAnimation
+                target: batBtn
+                property: "wavePhase"
+                from: 0
+                to: Math.PI * 2
+                duration: root.isCharging ? 1200 : 2200
+                loops: Animation.Infinite
+                running: root.visible && (!root.isDesktop) && batBtn.fillRatio > 0.0 && batBtn.fillRatio < 1.0 && root.isCharging
+            }
+
+            onFillRatioChanged: {
+                if (root.visible && (!root.isDesktop) && batBtn.fillRatio > 0.0 && batBtn.fillRatio < 1.0) {
+                    if (!waveAnimation.running) waveAnimation.start();
+                    if (!root.isCharging) waveSettleTimer.restart();
+                }
+            }
+
             Timer {
                 running: !root.isPreview && (!module || module.moduleActive) && root.showLayout && !batBtn.initAnimTrigger
                 interval: 150
@@ -191,70 +240,17 @@ Item {
             }
             Behavior on opacity { NumberAnimation { duration: 450; easing.type: Easing.OutCubic } }
 
-            Canvas {
-                id: sideBatCanvas
+            FluidWave {
+                id: sideBatWave
                 anchors.fill: parent
-                renderTarget: Canvas.FramebufferObject
-                renderStrategy: Canvas.Cooperative
-                visible: !root.isDesktop && batBtn.fillRatio > 0
-
-                onWidthChanged: requestPaint()
-                onHeightChanged: requestPaint()
-
-                onPaint: {
-                    var ctx = getContext("2d");
-                    ctx.clearRect(0, 0, width, height);
-                    if (root.isDesktop || batBtn.fillRatio <= 0) return;
-
-                    ctx.save();
-                    var r = Math.max(0, Math.min(batBtn.radius, Math.min(width / 2, height / 2)));
-                    ctx.beginPath();
-                    ctx.moveTo(r, 0);
-                    ctx.lineTo(width - r, 0);
-                    ctx.quadraticCurveTo(width, 0, width, r);
-                    ctx.lineTo(width, height - r);
-                    ctx.quadraticCurveTo(width, height, width - r, height);
-                    ctx.lineTo(r, height);
-                    ctx.quadraticCurveTo(0, height, 0, height - r);
-                    ctx.lineTo(0, r);
-                    ctx.quadraticCurveTo(0, 0, r, 0);
-                    ctx.closePath();
-                    ctx.clip();
-
-                    ctx.beginPath();
-                    ctx.rect(0, batBtn.fillY, width, height - batBtn.fillY);
-                    ctx.closePath();
-
-                    if (root.batStyle === "minimal") {
-                        ctx.fillStyle = root.calmBatFillColor.toString();
-                        ctx.globalAlpha = 0.92;
-                    } else {
-                        var grad = ctx.createLinearGradient(0, height, 0, batBtn.fillY);
-                        grad.addColorStop(0, batBtn.accentColor.toString());
-                        grad.addColorStop(1, Qt.lighter(batBtn.accentColor, 1.25).toString());
-                        ctx.fillStyle = grad;
-                        ctx.globalAlpha = 0.95;
-                    }
-                    ctx.fill();
-                    ctx.restore();
-                }
-
-                Connections {
-                    target: batBtn
-                    enabled: root.showLayout && (!module || module.moduleActive) && !root.isDesktop
-                    function onRadiusChanged() { sideBatCanvas.requestPaint(); }
-                    function onFillRatioChanged() { sideBatCanvas.requestPaint(); }
-                    function onFillYChanged() { sideBatCanvas.requestPaint(); }
-                    function onAccentColorChanged() { sideBatCanvas.requestPaint(); }
-                }
-
-                Connections {
-                    target: root
-                    enabled: root.showLayout && (!module || module.moduleActive) && !root.isDesktop
-                    function onBatStyleChanged() { sideBatCanvas.requestPaint(); }
-                    function onCalmBatFillColorChanged() { sideBatCanvas.requestPaint(); }
-                    function onIsDesktopChanged() { sideBatCanvas.requestPaint(); }
-                }
+                visible: !root.isDesktop && batBtn.fillRatio > 0.001
+                radius: batBtn.radius
+                fillLevel: batBtn.fillRatio
+                waveAmp: (batBtn.fillRatio < 0.99 && batBtn.waveAmp > 0) ? Math.min(batBtn.waveAmp, Math.min(height * batBtn.fillRatio, height * (1.0 - batBtn.fillRatio))) : 0
+                phase: batBtn.wavePhase
+                vertical: 1.0
+                color1: (root.batStyle === "minimal") ? root.calmBatFillColor : Qt.lighter(batBtn.accentColor, 1.20)
+                color2: (root.batStyle === "minimal") ? root.calmBatFillColor : batBtn.accentColor
             }
 
             Item {
