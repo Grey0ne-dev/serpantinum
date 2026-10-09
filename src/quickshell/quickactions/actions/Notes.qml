@@ -15,7 +15,17 @@ Item {
     property string safeActiveEdge: typeof activeEdge !== "undefined" ? activeEdge : "left"
 
     property bool stateLoaded: false
-    property var interceptedShortcuts: isEditing ? ["Return", "Enter", "Tab", "Shift+Tab", "Left", "Right", "Up", "Down", "Escape"] : []
+    property var interceptedShortcuts: isEditing ? ["Return", "Enter", "Left", "Right", "Up", "Down", "Escape"] : []
+    readonly property bool hasInputFocus: (typeof nameInput !== "undefined" && nameInput.hasFocus) || (typeof contentInput !== "undefined" && contentInput.hasFocus)
+
+    function unfocusInputs() {
+        if (typeof nameInput !== "undefined" && typeof nameInput.releaseFocus === "function") {
+            nameInput.releaseFocus();
+        }
+        if (typeof contentInput !== "undefined" && typeof contentInput.releaseFocus === "function") {
+            contentInput.releaseFocus();
+        }
+    }
 
     Shortcut {
         enabled: root.isActiveTab && root.isEditing
@@ -53,7 +63,56 @@ Item {
     property bool isEditing: false
     property string editingNoteId: ""
     property real editingUpdatedAt: 0
+    property bool editingNotePinned: false
     property bool isMarkdownPreview: false
+
+    readonly property bool areSelectedNotesPinned: {
+        let keys = Object.keys(root.selectedIds);
+        if (keys.length === 0) return false;
+        for (let i = 0; i < root.notesList.length; i++) {
+            let n = root.notesList[i];
+            if (root.selectedIds[n.id] && !n.pinned) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    readonly property var displayNotesList: {
+        let dummy = (typeof I18n !== "undefined" ? I18n.currentLang : "");
+        let raw = root.notesList || [];
+        let hasPinned = false;
+        for (let i = 0; i < raw.length; i++) {
+            if (raw[i].pinned) {
+                hasPinned = true;
+                break;
+            }
+        }
+        let pinnedLabel = I18n.t("quickactions.notes.pinned");
+        if (pinnedLabel === "quickactions.notes.pinned") {
+            pinnedLabel = I18n.t("clipboard.pinned");
+            if (pinnedLabel === "clipboard.pinned") pinnedLabel = "Pinned";
+        }
+        let recentLabel = I18n.t("quickactions.notes.recent");
+        if (recentLabel === "quickactions.notes.recent") {
+            recentLabel = I18n.t("clipboard.recent");
+            if (recentLabel === "clipboard.recent") recentLabel = "Recent";
+        }
+
+        let pinned = [];
+        let unpinned = [];
+        for (let i = 0; i < raw.length; i++) {
+            let item = raw[i];
+            let copy = Object.assign({}, item);
+            copy.sectionCategory = hasPinned ? (item.pinned ? pinnedLabel : recentLabel) : "";
+            if (item.pinned) {
+                pinned.push(copy);
+            } else {
+                unpinned.push(copy);
+            }
+        }
+        return pinned.concat(unpinned);
+    }
 
     property real expandProgress: 0.0
     property bool isDraggingV: false
@@ -204,11 +263,28 @@ Item {
         root.saveNotes();
     }
 
+    function togglePinSelectedNotes() {
+        let allPinned = root.areSelectedNotesPinned;
+        let targetPinned = !allPinned;
+        let list = root.notesList.map(n => {
+            if (root.selectedIds[n.id]) {
+                let copy = Object.assign({}, n);
+                copy.pinned = targetPinned;
+                return copy;
+            }
+            return n;
+        });
+        root.notesList = list;
+        root.clearSelection();
+        root.saveNotes();
+    }
+
     function createNewNote() {
         root.clearSelection();
         let newId = "note_" + Date.now();
         root.editingNoteId = newId;
         root.editingUpdatedAt = Date.now();
+        root.editingNotePinned = false;
         nameInput.text = "";
         contentInput.text = "";
         root.isMarkdownPreview = false;
@@ -223,6 +299,7 @@ Item {
         }
         root.editingNoteId = noteItem.id;
         root.editingUpdatedAt = noteItem.updatedAt || Date.now();
+        root.editingNotePinned = Boolean(noteItem.pinned);
         nameInput.text = noteItem.title || "";
         contentInput.text = noteItem.content || "";
         root.isMarkdownPreview = false;
@@ -264,6 +341,7 @@ Item {
                 id: id,
                 title: t,
                 content: c,
+                pinned: root.editingNotePinned,
                 updatedAt: now,
                 createdAt: list[idx].createdAt || now
             };
@@ -272,6 +350,7 @@ Item {
                 id: id,
                 title: t,
                 content: c,
+                pinned: root.editingNotePinned,
                 updatedAt: now,
                 createdAt: now
             });
@@ -392,14 +471,30 @@ Item {
 
                         Text {
                             visible: root.selectedCount > 0
-                            text: I18n.t("quickactions.notes.delete_selected", { count: root.selectedCount })
-                            color: ThemeBackend.peach
+                            text: {
+                                let t = I18n.t("quickactions.notes.selected_count", { count: root.selectedCount });
+                                return (t !== "quickactions.notes.selected_count") ? t : (root.selectedCount + " selected");
+                            }
+                            color: ThemeBackend.mauve
                             font.family: ThemeBackend.fontFamily
                             font.pixelSize: root.s(13)
                             font.bold: true
                             Layout.fillWidth: true
                             elide: Text.ElideRight
                             Layout.alignment: Qt.AlignVCenter
+                        }
+
+                        IconButton {
+                            visible: root.selectedCount > 0
+                            size: root.s(32)
+                            cornerRadius: root.s(8)
+                            iconFont: root.nerdFont
+                            iconFontSize: root.s(15)
+                            buttonIcon: "󰐃"
+                            textColor: root.areSelectedNotesPinned ? ThemeBackend.mauve : ThemeBackend.subtext0
+                            accentColor: root.areSelectedNotesPinned ? root.alpha(ThemeBackend.mauve, 0.2) : ThemeBackend.surface0
+                            Layout.alignment: Qt.AlignVCenter
+                            onClicked: root.togglePinSelectedNotes()
                         }
 
                         IconButton {
@@ -443,7 +538,27 @@ Item {
                     spacing: root.s(6)
                     clip: true
                     boundsBehavior: Flickable.StopAtBounds
-                    model: root.notesList
+                    model: root.displayNotesList
+
+                    section.property: "sectionCategory"
+                    section.criteria: ViewSection.FullString
+                    section.delegate: Item {
+                        width: ListView.view ? ListView.view.width : 0
+                        height: (section && section !== "") ? root.s(22) : 0
+                        visible: section && section !== ""
+
+                        Text {
+                            anchors.left: parent.left
+                            anchors.leftMargin: root.s(4)
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: section
+                            font.family: ThemeBackend.fontFamily
+                            font.weight: Font.Bold
+                            font.pixelSize: root.s(10.5)
+                            color: ThemeBackend.subtext0
+                            opacity: 0.85
+                        }
+                    }
 
                     ScrollBar.vertical: ScrollBar {
                         active: notesListView.moving || notesListView.movingVertically
