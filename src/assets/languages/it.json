@@ -510,6 +510,22 @@
           "button": "Pulsante interattivo con sfondo",
           "text": "Testo e icona puliti senza sfondo"
         }
+      },
+      "kb": {
+        "show_icon": {
+          "title": "Mostra icona",
+          "desc": "Mostra l'icona del layout della tastiera"
+        },
+        "style": {
+          "title": "Stile",
+          "desc": "Scegli l'aspetto visivo del modulo tastiera",
+          "name": {
+            "button": "Pulsante",
+            "text": "Testo"
+          },
+          "button": "Pulsante interattivo con sfondo",
+          "text": "Testo e icona puliti senza sfondo"
+        }
       }
     },
     "theme": {

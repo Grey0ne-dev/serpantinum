@@ -511,6 +511,22 @@
           "button": "Nút tương tác có nền",
           "text": "Biểu tượng và văn bản không có nền"
         }
+      },
+      "kb": {
+        "show_icon": {
+          "title": "Hiển thị biểu tượng",
+          "desc": "Hiển thị biểu tượng bố cục bàn phím"
+        },
+        "style": {
+          "title": "Kiểu dáng",
+          "desc": "Chọn giao diện trực quan của mô-đun bàn phím",
+          "name": {
+            "button": "Nút bấm",
+            "text": "Văn bản"
+          },
+          "button": "Nút tương tác có nền",
+          "text": "Biểu tượng và văn bản không có nền"
+        }
       }
     },
     "theme": {

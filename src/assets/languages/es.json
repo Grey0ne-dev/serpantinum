@@ -512,6 +512,22 @@
           "button": "Botón interactivo con fondo",
           "text": "Texto e icono limpios sin fondo"
         }
+      },
+      "kb": {
+        "show_icon": {
+          "title": "Mostrar icono",
+          "desc": "Muestra el icono de distribución del teclado"
+        },
+        "style": {
+          "title": "Estilo",
+          "desc": "Elige la apariencia visual del módulo de teclado",
+          "name": {
+            "button": "Botón",
+            "text": "Texto"
+          },
+          "button": "Botón interactivo con fondo",
+          "text": "Texto e icono limpios sin fondo"
+        }
       }
     },
     "theme": {

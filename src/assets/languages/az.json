@@ -509,6 +509,22 @@
           "button": "Arxa planlı interaktiv düymə",
           "text": "Arxa plansız sadə mətn və ikon"
         }
+      },
+      "kb": {
+        "show_icon": {
+          "title": "İkonu göstər",
+          "desc": "Klaviatura düzümü ikonunu göstər"
+        },
+        "style": {
+          "title": "Stil",
+          "desc": "Klaviatura modulunun vizual görünüşünü seçin",
+          "name": {
+            "button": "Düymə",
+            "text": "Mətn"
+          },
+          "button": "Arxa planlı interaktiv düymə",
+          "text": "Arxa plansız sadə mətn və ikon"
+        }
       }
     },
     "theme": {

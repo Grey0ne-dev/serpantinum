@@ -511,6 +511,22 @@
           "button": "Interactive button pill with background",
           "text": "Clean text and icon without background"
         }
+      },
+      "kb": {
+        "show_icon": {
+          "title": "Show Icon",
+          "desc": "Display the keyboard layout icon"
+        },
+        "style": {
+          "title": "Style",
+          "desc": "Choose the visual appearance of the keyboard module",
+          "name": {
+            "button": "Button",
+            "text": "Text"
+          },
+          "button": "Interactive button pill with background",
+          "text": "Clean text and icon without background"
+        }
       }
     },
     "theme": {

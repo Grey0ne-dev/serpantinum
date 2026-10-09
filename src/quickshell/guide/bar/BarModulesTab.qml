@@ -116,6 +116,7 @@ Item {
     readonly property var wifiStyles: BarModuleRegistry.variantList("wifi")
     readonly property var btStyles: BarModuleRegistry.variantList("bt")
     readonly property var volStyles: BarModuleRegistry.variantList("vol")
+    readonly property var kbStyles: BarModuleRegistry.variantList("kb")
 
     property string wifiStyle: {
         let bs = Config.getSetting("bar", {});
@@ -168,6 +169,18 @@ Item {
     property bool volShowPercent: {
         let bs = Config.getSetting("bar", {});
         if (bs && bs.volShowPercent !== undefined) return Boolean(bs.volShowPercent);
+        return true;
+    }
+
+    property string kbStyle: {
+        let bs = Config.getSetting("bar", {});
+        if (bs && bs.kbStyle) return bs.kbStyle;
+        return "button";
+    }
+
+    property bool kbShowIcon: {
+        let bs = Config.getSetting("bar", {});
+        if (bs && bs.kbShowIcon !== undefined) return Boolean(bs.kbShowIcon);
         return true;
     }
 
@@ -283,6 +296,17 @@ Item {
         property string volStyle: barModulesRoot.volStyle
         property bool volShowIcon: barModulesRoot.volShowIcon
         property bool volShowPercent: barModulesRoot.volShowPercent
+        property bool isPreview: true
+        property var barWindow: ({ "startupCascadeFinished": true, "isStartupReady": true, "isDataReady": true, "s": function(v) { return rootObj ? rootObj.s(v) : v; } })
+        property bool moduleActive: barModulesRoot.visible
+    }
+
+    QtObject {
+        id: previewKbWidgetObj
+        function s(v) { return rootObj ? rootObj.s(v) : v; }
+        property bool isCompact: false
+        property string kbStyle: barModulesRoot.kbStyle
+        property bool kbShowIcon: barModulesRoot.kbShowIcon
         property bool isPreview: true
         property var barWindow: ({ "startupCascadeFinished": true, "isStartupReady": true, "isDataReady": true, "s": function(v) { return rootObj ? rootObj.s(v) : v; } })
         property bool moduleActive: barModulesRoot.visible
@@ -444,6 +468,18 @@ Item {
             barModulesRoot.volShowPercent = Boolean(bs.volShowPercent);
         } else {
             barModulesRoot.volShowPercent = true;
+        }
+
+        if (bs && bs.kbStyle) {
+            barModulesRoot.kbStyle = bs.kbStyle;
+        } else {
+            barModulesRoot.kbStyle = "button";
+        }
+
+        if (bs && bs.kbShowIcon !== undefined) {
+            barModulesRoot.kbShowIcon = Boolean(bs.kbShowIcon);
+        } else {
+            barModulesRoot.kbShowIcon = true;
         }
 
         if (!barModulesRoot.batShowPercent && !barModulesRoot.batShowIcon) {
@@ -651,6 +687,20 @@ Item {
         barModulesRoot.volShowPercent = val;
         let current = Config.getSetting("bar", {});
         current.volShowPercent = val;
+        Config.setSetting("bar", current);
+    }
+
+    function setKbStyle(styleName) {
+        barModulesRoot.kbStyle = styleName;
+        let current = Config.getSetting("bar", {});
+        current.kbStyle = styleName;
+        Config.setSetting("bar", current);
+    }
+
+    function setKbShowIcon(val) {
+        barModulesRoot.kbShowIcon = val;
+        let current = Config.getSetting("bar", {});
+        current.kbShowIcon = val;
         Config.setSetting("bar", current);
     }
 
@@ -2912,6 +2962,277 @@ Item {
                                 Layout.fillWidth: true
                                 Layout.preferredWidth: 1
                                 visible: volStylesGrid.columns === 3
+                            }
+                        }
+                    }
+                }
+            }
+
+            Rectangle {
+                id: kbModuleBox
+                Layout.fillWidth: true
+                implicitHeight: kbCardLayout.implicitHeight + rootObj.s(24)
+                radius: ThemeBackend.borderRadius
+                color: Qt.alpha(ThemeBackend.surface0, 0.4)
+                border.color: Qt.alpha(ThemeBackend.surface1, 0.4)
+                border.width: 1
+                clip: true
+
+                ColumnLayout {
+                    id: kbCardLayout
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.top: parent.top
+                    anchors.margins: rootObj.s(12)
+                    spacing: rootObj.s(6)
+
+                    RowLayout {
+                        Layout.fillWidth: true
+                        Layout.bottomMargin: rootObj.s(6)
+                        Layout.leftMargin: rootObj.s(4)
+                        Layout.rightMargin: rootObj.s(4)
+                        spacing: rootObj.s(8)
+
+                        Text {
+                            text: I18n.t("guide.bar.modules.keyboard", "Keyboard")
+                            font.family: ThemeBackend.fontFamily
+                            font.pixelSize: rootObj.s(16)
+                            font.bold: true
+                            color: ThemeBackend.text
+                        }
+                    }
+
+                    Rectangle {
+                        id: kbPreviewBox
+                        Layout.fillWidth: true
+                        implicitHeight: rootObj.s(barModulesRoot.isSideBar ? 120 : 72)
+                        radius: ThemeBackend.borderRadius
+                        color: Qt.darker(ThemeBackend.mantle, 1.1)
+                        border.color: Qt.alpha(ThemeBackend.surface2, 0.25)
+                        border.width: 1
+                        clip: true
+
+                        Item {
+                            anchors.fill: parent
+                            enabled: false
+
+                            Loader {
+                                id: kbFacePreviewLoader
+                                anchors.centerIn: parent
+                                width: item ? item.implicitWidth : 0
+                                height: item ? item.implicitHeight : 0
+                                scale: Math.min(1.0, Math.min((kbPreviewBox.width - rootObj.s(16)) / Math.max(1, width), (kbPreviewBox.height - rootObj.s(16)) / Math.max(1, height)))
+                                asynchronous: false
+                                source: barModulesRoot.isSideBar
+                                    ? Qt.resolvedUrl("../../bar/faces/kb/SideKbFace.qml")
+                                    : Qt.resolvedUrl("../../bar/faces/kb/KbFace.qml")
+
+                                onLoaded: {
+                                    if (item) {
+                                        item.widget = previewKbWidgetObj;
+                                        item.width = Qt.binding(function() { return item.implicitWidth; });
+                                        item.height = Qt.binding(function() { return item.implicitHeight; });
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    SettingsRow {
+                        rootObj: barModulesRoot.rootObj
+                        settingId: "bar_kb_show_icon"
+                        searchKeywords: "keyboard layout icon symbol indicator"
+                        baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
+                        icon: "󰌌"
+                        title: I18n.t("guide.bar.kb.show_icon.title", "Show Icon")
+                        description: I18n.t("guide.bar.kb.show_icon.desc", "Display the keyboard layout icon")
+                        visible: !barModulesRoot.isSideBar
+                        searchable: !barModulesRoot.isSideBar
+                        hiddenByConfig: barModulesRoot.isSideBar
+
+                        Toggle {
+                            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                            checked: barModulesRoot.kbShowIcon
+                            accentColor: ThemeBackend.mauve
+                            baseColor: ThemeBackend.surface1
+                            handleColor: ThemeBackend.crust
+                            handleOffColor: ThemeBackend.text
+                            onToggled: function(c) {
+                                barModulesRoot.setKbShowIcon(c);
+                            }
+                        }
+                    }
+
+                    SettingsRow {
+                        id: kbStyleRow
+                        rootObj: barModulesRoot.rootObj
+                        settingId: "bar_kb_style"
+                        searchKeywords: "keyboard layout style look button text layout"
+                        baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
+                        icon: "󰌌"
+                        title: I18n.t("guide.bar.kb.style.title", "Style")
+                        description: I18n.t("guide.bar.kb.style.desc", "Choose the visual appearance of the keyboard module")
+
+                        bottomContent: GridLayout {
+                            id: kbStylesGrid
+                            Layout.fillWidth: true
+                            columns: Math.max(1, Math.min(3, Math.floor(kbCardLayout.width / rootObj.s(160))))
+                            rowSpacing: rootObj.s(10)
+                            columnSpacing: rootObj.s(10)
+
+                            Repeater {
+                                model: barModulesRoot.kbStyles
+                                delegate: Rectangle {
+                                    id: kbStyleCard
+                                    required property var modelData
+                                    required property int index
+
+                                    readonly property bool isSelected: barModulesRoot.kbStyle === modelData.id
+                                    property real popScale: 1.0
+                                    property real flashOpacity: 0.0
+
+                                    Layout.fillWidth: true
+                                    Layout.preferredWidth: 1
+                                    implicitHeight: kbStyleInnerCol.implicitHeight + rootObj.s(16)
+                                    radius: ThemeBackend.borderRadius
+                                    clip: true
+
+                                    color: cardMouse.pressed
+                                        ? Qt.darker(ThemeBackend.surface0, 1.15)
+                                        : (isSelected
+                                            ? (cardHover.hovered ? Qt.lighter(ThemeBackend.surface0, 1.30) : Qt.lighter(ThemeBackend.surface0, 1.24))
+                                            : (cardHover.hovered ? Qt.lighter(ThemeBackend.surface0, 1.10) : ThemeBackend.surface0))
+
+                                    border.width: 1
+                                    border.color: isSelected
+                                        ? Qt.alpha(ThemeBackend.surface2, 0.75)
+                                        : (cardHover.hovered ? Qt.alpha(ThemeBackend.surface2, 0.5) : Qt.alpha(ThemeBackend.surface1, 0.4))
+
+                                    Behavior on color { ColorAnimation { duration: 180 } }
+                                    Behavior on border.color { ColorAnimation { duration: 180 } }
+
+                                    scale: (cardMouse.pressed ? 0.985 : (cardHover.hovered ? 1.015 : 1.0)) * kbStyleCard.popScale
+                                    Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
+
+                                    HoverHandler {
+                                        id: cardHover
+                                    }
+
+                                    Rectangle {
+                                        anchors.fill: parent
+                                        radius: parent.radius
+                                        color: "#ffffff"
+                                        opacity: kbStyleCard.flashOpacity
+                                        PropertyAnimation on opacity { id: kbFlashAnim; to: 0; duration: 350; easing.type: Easing.OutExpo }
+                                    }
+
+                                    SequentialAnimation {
+                                        id: kbPopAnim
+                                        NumberAnimation { target: kbStyleCard; property: "popScale"; to: 1.02; duration: 100; easing.type: Easing.OutQuad }
+                                        NumberAnimation { target: kbStyleCard; property: "popScale"; to: 1.0; duration: 350; easing.type: Easing.OutQuint }
+                                    }
+
+                                    MouseArea {
+                                        id: cardMouse
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: {
+                                            kbPopAnim.start();
+                                            kbStyleCard.flashOpacity = 0.15;
+                                            kbFlashAnim.start();
+                                            if (typeof Sounds !== "undefined") {
+                                                Sounds.playSfx("reusables/clickbutton/click.wav");
+                                            }
+                                            barModulesRoot.setKbStyle(modelData.id);
+                                        }
+                                    }
+
+                                    ColumnLayout {
+                                        id: kbStyleInnerCol
+                                        anchors.left: parent.left
+                                        anchors.right: parent.right
+                                        anchors.top: parent.top
+                                        anchors.margins: rootObj.s(8)
+                                        spacing: rootObj.s(8)
+
+                                        Rectangle {
+                                            id: kbCardPreviewBox
+                                            Layout.fillWidth: true
+                                            implicitHeight: rootObj.s(barModulesRoot.isSideBar ? 140 : 72)
+                                            radius: ThemeBackend.borderRadius
+                                            color: Qt.darker(ThemeBackend.mantle, 1.1)
+                                            clip: true
+
+                                            Item {
+                                                anchors.fill: parent
+                                                enabled: false
+
+                                                QtObject {
+                                                    id: cardMockWidget
+                                                    function s(v) { return rootObj ? rootObj.s(v) : v; }
+                                                    property bool isCompact: false
+                                                    property string kbStyle: modelData.id
+                                                    property bool kbShowIcon: barModulesRoot.kbShowIcon
+                                                    property bool isPreview: true
+                                                    property var barWindow: ({
+                                                        "startupCascadeFinished": true,
+                                                        "isStartupReady": true,
+                                                        "isDataReady": true,
+                                                        "s": function(v) { return rootObj ? rootObj.s(v) : v; }
+                                                    })
+                                                    property bool moduleActive: barModulesRoot.visible
+                                                }
+
+                                                Loader {
+                                                    id: kbCardFaceLoader
+                                                    anchors.centerIn: parent
+                                                    width: item ? item.implicitWidth : 0
+                                                    height: item ? item.implicitHeight : 0
+                                                    scale: Math.min(1.0, Math.min((kbCardPreviewBox.width - rootObj.s(16)) / Math.max(1, width), (kbCardPreviewBox.height - rootObj.s(16)) / Math.max(1, height)))
+                                                    asynchronous: false
+                                                    source: barModulesRoot.isSideBar
+                                                        ? Qt.resolvedUrl("../../bar/faces/kb/SideKbFace.qml")
+                                                        : Qt.resolvedUrl("../../bar/faces/kb/KbFace.qml")
+
+                                                    onLoaded: {
+                                                        if (item) {
+                                                            item.widget = cardMockWidget;
+                                                            item.width = Qt.binding(function() { return item.implicitWidth; });
+                                                            item.height = Qt.binding(function() { return item.implicitHeight; });
+                                                        }
+                                                    }
+                                                }
+                                            }
+
+                                            Rectangle {
+                                                anchors.fill: parent
+                                                radius: parent.radius
+                                                color: "transparent"
+                                                border.width: 1
+                                                border.color: Qt.alpha(ThemeBackend.surface2, 0.25)
+                                            }
+                                        }
+
+                                        Text {
+                                            Layout.fillWidth: true
+                                            Layout.leftMargin: rootObj.s(2)
+                                            Layout.rightMargin: rootObj.s(2)
+                                            Layout.bottomMargin: rootObj.s(2)
+                                            text: modelData.name
+                                            font.family: ThemeBackend.fontFamily
+                                            font.pixelSize: rootObj.s(13)
+                                            font.weight: Font.Bold
+                                            color: ThemeBackend.text
+                                        }
+                                    }
+                                }
+                            }
+
+                            Item {
+                                Layout.fillWidth: true
+                                Layout.preferredWidth: 1
+                                visible: kbStylesGrid.columns === 3
                             }
                         }
                     }

@@ -150,9 +150,27 @@ QtObject {
         "kb": {
             name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.keyboard", "Keyboard") : "Keyboard",
             icon: "󰌌",
-            defaultVariant: "default",
+            defaultVariant: "button",
             horizontalFace: "faces/kb/KbFace.qml",
-            verticalFace: "faces/kb/SideKbFace.qml"
+            verticalFace: "faces/kb/SideKbFace.qml",
+            variants: {
+                "button": {
+                    id: "button",
+                    name: typeof I18n !== "undefined" ? I18n.t("guide.bar.kb.style.name.button", "Button") : "Button",
+                    desc: typeof I18n !== "undefined" ? I18n.t("guide.bar.kb.style.button", "Interactive button pill with background") : "Interactive button pill with background",
+                    icon: "󰌌",
+                    horizontalFace: "faces/kb/KbFace.qml",
+                    verticalFace: "faces/kb/SideKbFace.qml"
+                },
+                "text": {
+                    id: "text",
+                    name: typeof I18n !== "undefined" ? I18n.t("guide.bar.kb.style.name.text", "Text") : "Text",
+                    desc: typeof I18n !== "undefined" ? I18n.t("guide.bar.kb.style.text", "Clean text and icon without background") : "Clean text and icon without background",
+                    icon: "󰌌",
+                    horizontalFace: "faces/kb/KbFace.qml",
+                    verticalFace: "faces/kb/SideKbFace.qml"
+                }
+            }
         },
         "wifi": {
             name: typeof I18n !== "undefined" ? I18n.t("guide.bar.modules.network", "Network") : "Network",
@@ -289,6 +307,12 @@ QtObject {
             if (isSide && ss.volStyle) return ss.volStyle;
             if (isSide && bs.sideVolStyle) return bs.sideVolStyle;
             if (bs.volStyle) return bs.volStyle;
+            return "button";
+        }
+        if (norm === "kb") {
+            if (isSide && ss.kbStyle) return ss.kbStyle;
+            if (isSide && bs.sideKbStyle) return bs.sideKbStyle;
+            if (bs.kbStyle) return bs.kbStyle;
             return "button";
         }
         if (norm === "bat") {
