@@ -1,3 +1,29 @@
+### 2.2.6
+
+- fix(bar): stop the battery wave when no charge is flowing (#416)
+- feat(quickactions): add pinned notes sections and wrap note editor in card
+- fix(sysnotif): prevent reload and duplicate full battery notifications
+- fix(quickactions): manage keyboard focus and shortcut isolation during input editing
+- feat(i18n): add translations for notes pinning and selection
+- feat(inputs): add releaseFocus method to Input component
+- fix: align topbar modules dynamically next to system panel edge
+- feat: enhance notes expanding animations and floating quickaction tab pills
+- fix(widgets): resolve ReferenceError when removing widget in WidgetRedactor
+- fix: correct filled content box height in SystemUsageCard
+- fix(audio): resolve binding loops in audio device and stream cache
+- fix(audio): tag and filter out serpantinum sfx streams from volume stream list
+- fix(workspaces): fix active and occupied state tracking on niri dynamic workspaces
+- fix(bar): show all running timers in info faces simultaneously
+- feat(bar): add text style for battery module
+- feat(bar): add style and icon toggle settings for keyboard module
+- fix(main): prevent monitor scale from double scaling popup dimensions
+- fix(clock): use mod() in lumen dial shader to fix GLSL ES memory leak
+- feat(bar): add style and visibility settings for network, bluetooth, and volume modules
+- perf(guide): optimize popup loading, tab transitions, and background initialization
+- perf(sysdata): stream system stats from one long-running fetcher (#414)
+- perf(lock): eliminate redundant clock timer and bind directly to DateTime
+- fix(lock): keep lockscreen clock synchronized and updating
+
 ### 2.2.5-1
 
 - fix: ensure i18n translation readiness before notification dispatch
