@@ -94,8 +94,21 @@ PanelWindow {
     }
 
     onIsActiveChanged: {
-        if (!root.isActive) {
+        if (root.isActive) {
+            root.grabKeyboardFocus();
+            Qt.callLater(root.grabKeyboardFocus);
+        } else {
             if (root.freezeImg !== "") Quickshell.execDetached(["bash", "-c", "rm -f " + root.freezeImg]);
+        }
+    }
+
+    function grabKeyboardFocus() {
+        if (!root.isActive) return;
+        if (typeof root.requestActivate === "function") {
+            root.requestActivate();
+        }
+        if (root.contentItem) {
+            root.contentItem.forceActiveFocus();
         }
     }
 
