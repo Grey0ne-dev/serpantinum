@@ -17,7 +17,7 @@ Variants {
 
             WlrLayershell.namespace: "qs-floating-overlay"
             WlrLayershell.layer: WlrLayer.Overlay
-            WlrLayershell.keyboardFocus: shouldHaveKeyboardFocus ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
+            WlrLayershell.keyboardFocus: shouldHaveKeyboardFocus ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
             exclusionMode: ExclusionMode.Ignore
             color: "transparent"
 
