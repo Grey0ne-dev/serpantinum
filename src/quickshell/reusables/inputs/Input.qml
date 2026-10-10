@@ -622,6 +622,9 @@ FocusScope {
                                     typingPop.popY = r.y;
                                     popAnim.restart();
                                 }
+                            } else {
+                                popAnim.stop();
+                                typingPop.popOpacity = 0.0;
                             }
                             root.text = text;
                             if (typeof Sounds !== "undefined") {
@@ -656,6 +659,7 @@ FocusScope {
 
                     ParallelAnimation {
                         id: popAnim
+                        onFinished: typingPop.popOpacity = 0.0
                         NumberAnimation { target: typingPop; property: "popScale"; from: 0.3; to: 1.0; duration: 420; easing.type: Easing.OutBack; easing.overshoot: 3.2 }
                         NumberAnimation { target: typingPop; property: "popOffsetY"; from: 10; to: 0; duration: 420; easing.type: Easing.OutBack; easing.overshoot: 2.5 }
                         NumberAnimation { target: typingPop; property: "popOpacity"; from: 0.0; to: 1.0; duration: 140; easing.type: Easing.OutCubic }
