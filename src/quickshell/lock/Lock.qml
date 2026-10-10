@@ -711,10 +711,6 @@ Scope {
                         updateCavaConsumer();
                     }
 
-                    property real globalWavePhase: 0.0
-                    NumberAnimation on globalWavePhase {
-                        from: 0; to: Math.PI * 2; duration: 1800; loops: Animation.Infinite; running: screenRoot.wingsReveal > 0.98
-                    }
 
                     property real rawCpu: isNaN(SysData.cpu) ? 0.0 : SysData.cpu / 100.0
                     property real cpuUsage: rawCpu
@@ -805,8 +801,8 @@ Scope {
                         function onResumeRevisionChanged() {
                             if (rootLock.locked && !screenRoot.isUnlocking) {
                                 screenRoot.restoreFocus();
-                                if (typeof clockModule !== "undefined" && clockModule.updateClock) {
-                                    clockModule.updateClock();
+                                if (typeof clockModule !== "undefined") {
+                                    clockModule.currentTime = (typeof DateTime !== "undefined" && DateTime.now) ? DateTime.now : new Date();
                                 }
                             }
                         }
@@ -957,94 +953,24 @@ Scope {
                         }
                     }
 
-                    Canvas {
+                    ShaderEffect {
                         id: wipeCanvas
                         anchors.fill: parent
                         z: 10
-                        renderTarget: Canvas.FramebufferObject
-                        renderStrategy: Canvas.Immediate
-
-                        property real lastPaintedRev: -1
-                        property real cachedS28: screenRoot.s(28)
-
-                        readonly property var wipeColors: [
-                            ThemeBackend.crust.toString(),
-                            ThemeBackend.surface1.toString(),
-                            ThemeBackend.blue.toString(),
-                            ThemeBackend.mauve.toString(),
-                            ThemeBackend.surface0.toString()
-                        ]
-                        readonly property var wipeAmps: [1.5, 1.3, 1.1, 0.9, 0.6]
-                        readonly property var wipeOffsets: [0.0, 0.5, 1.0, 1.5, 2.0]
 
                         opacity: screenRoot.isPlayingIntro ? (screenRoot.panelReveal < 0.8 ? 1.0 : Math.max(0.0, (1.0 - screenRoot.panelReveal) / 0.2)) : 0.0
                         visible: opacity > 0.001
 
-                        Connections {
-                            target: screenRoot
-                            enabled: screenRoot.isPlayingIntro && wipeCanvas.visible
-                            function onPanelRevealChanged() {
-                                if (Math.abs(screenRoot.panelReveal - wipeCanvas.lastPaintedRev) >= 0.005) {
-                                    wipeCanvas.requestPaint();
-                                }
-                            }
-                        }
+                        property vector2d itemSize: Qt.vector2d(width, height)
+                        property real reveal: screenRoot.panelReveal
+                        property real s28: screenRoot.s(28)
+                        property color color0: ThemeBackend.crust
+                        property color color1: ThemeBackend.surface1
+                        property color color2: ThemeBackend.blue
+                        property color color3: ThemeBackend.mauve
+                        property color color4: ThemeBackend.surface0
 
-                        onPaint: {
-                            var rev = screenRoot.panelReveal;
-                            lastPaintedRev = rev;
-                            if (rev <= 0.0) return;
-
-                            var ctx = getContext("2d");
-                            var w = width;
-                            var h = height;
-
-                            var lastFull = -1;
-                            for (var k = 4; k >= 0; k--) {
-                                var p = (rev - (k === 0 ? 0.0 : k * 0.07)) * 1.55;
-                                if (p >= 1.0) {
-                                    lastFull = k;
-                                    break;
-                                }
-                            }
-
-                            if (lastFull >= 0) {
-                                ctx.fillStyle = wipeColors[lastFull];
-                                ctx.fillRect(0, 0, w, h);
-                            } else {
-                                ctx.clearRect(0, 0, w, h);
-                            }
-
-                            var start = lastFull + 1;
-                            if (start >= 5) return;
-
-                            var phase = rev * 7.853981633974483;
-                            var s28 = cachedS28;
-                            var cp1x = w * 0.38;
-                            var cp2x = w * 0.72;
-                            var pi = 3.141592653589793;
-
-                            for (var i = start; i < 5; i++) {
-                                var prog = (rev - (i === 0 ? 0.0 : i * 0.07)) * 1.55;
-                                if (prog <= 0.0) continue;
-
-                                var smoothProg = Math.pow(prog, 1.4);
-                                var currentY = h * smoothProg;
-                                var waveAmp = s28 * Math.sin(smoothProg * pi) * wipeAmps[i];
-
-                                var cp1y = currentY + Math.sin(phase + wipeOffsets[i]) * waveAmp;
-                                var cp2y = currentY + Math.cos(phase + wipeOffsets[i] + pi) * waveAmp;
-
-                                ctx.beginPath();
-                                ctx.moveTo(0, 0);
-                                ctx.lineTo(0, currentY);
-                                ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, w, currentY);
-                                ctx.lineTo(w, 0);
-                                ctx.closePath();
-                                ctx.fillStyle = wipeColors[i];
-                                ctx.fill();
-                            }
-                        }
+                        fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/effects/curtain_wipe.frag.qsb"
                     }
 
                     SequentialAnimation {
@@ -1118,7 +1044,7 @@ Scope {
                                 scale: (screenRoot.inputActive || screenRoot.centerReveal > 0.02) ? 0.92 : 1.0
                                 visible: opacity > 0.01
 
-                                property var currentTime: new Date()
+                                property var currentTime: (typeof DateTime !== "undefined" && DateTime.now) ? DateTime.now : new Date()
                                 property string timeFormat: {
                                     if (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar && Config.rawSettings.bar.time && Config.rawSettings.bar.time.format !== undefined) {
                                         return Config.rawSettings.bar.time.format;
@@ -1127,10 +1053,6 @@ Scope {
                                 }
                                 readonly property bool is12h: timeFormat.includes("h") || timeFormat.toLowerCase().includes("ap")
                                 readonly property string hourFmt: is12h ? (timeFormat.includes("hh") ? "hh" : "h") : (timeFormat.includes("H") && !timeFormat.includes("HH") ? "H" : "HH")
-
-                                Component.onCompleted: {
-                                    updateClock();
-                                }
 
                                 Behavior on anchors.verticalCenterOffset { NumberAnimation { duration: 320; easing.type: Easing.OutCubic } }
                                 Behavior on opacity { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
@@ -1256,21 +1178,10 @@ Scope {
                                     }
                                 }
 
-                                function updateClock() {
-                                    clockModule.currentTime = new Date();
-                                    let sec = clockModule.currentTime.getSeconds();
-                                    let ms = clockModule.currentTime.getMilliseconds();
-                                    let msToNextMinute = ((60 - sec) * 1000) - ms;
-                                    clockTimer.interval = Math.max(500, msToNextMinute);
-                                }
-
-                                Timer {
-                                    id: clockTimer
-                                    interval: 1000
-                                    running: rootLock.locked && !screenRoot.isUnlocking
-                                    repeat: true
-                                    onTriggered: {
-                                        clockModule.updateClock();
+                                Connections {
+                                    target: typeof DateTime !== "undefined" ? DateTime : null
+                                    function onNowChanged() {
+                                        clockModule.currentTime = DateTime.now;
                                     }
                                 }
                             }
@@ -1875,7 +1786,6 @@ Scope {
                                     icon: "\uF2DB"
                                     title: I18n.t("quickactions.systemusage.cpu")
                                     valueText: Math.round(screenRoot.cpuUsage * 100) + "%"
-                                    wavePhase: screenRoot.globalWavePhase
                                     isLive: screenRoot.wingsReveal > 0.98
                                     hasShadow: true
                                     compact: true
@@ -1892,7 +1802,6 @@ Scope {
                                     icon: "\uF538"
                                     title: I18n.t("quickactions.systemusage.ram")
                                     valueText: screenRoot.ramUsedGb.toFixed(1) + "G"
-                                    wavePhase: screenRoot.globalWavePhase
                                     isLive: screenRoot.wingsReveal > 0.98
                                     hasShadow: true
                                     compact: true
@@ -1909,7 +1818,6 @@ Scope {
                                     icon: "\uF2C9"
                                     title: I18n.t("quickactions.systemusage.temp")
                                     valueText: Math.round(screenRoot.tempC) + "°"
-                                    wavePhase: screenRoot.globalWavePhase
                                     isLive: screenRoot.wingsReveal > 0.98
                                     hasShadow: true
                                     compact: true
@@ -1927,7 +1835,6 @@ Scope {
                                     title: screenRoot.diskTotalText
                                     subText: screenRoot.diskUsedText
                                     valueText: Math.round(screenRoot.diskUsagePercent * 100) + "%"
-                                    wavePhase: screenRoot.globalWavePhase
                                     isLive: screenRoot.wingsReveal > 0.98
                                     hasShadow: true
                                     compact: true
@@ -1944,7 +1851,6 @@ Scope {
                                     icon: "󰤨"
                                     title: I18n.t("quickactions.systemusage.net")
                                     valueText: ""
-                                    wavePhase: screenRoot.globalWavePhase
                                     isLive: screenRoot.wingsReveal > 0.98
                                     hasShadow: true
                                     compact: true

@@ -210,7 +210,7 @@ Item {
         property matrix4x4 levels6
         property matrix4x4 levels7
         property color color: root.color
-        property size itemSize: Qt.size(width, height)
+        property vector2d itemSize: Qt.vector2d(width, height)
         property real count: root.levelCount
         property real vertical: root.vertical ? 1.0 : 0.0
         property real alignment: root.alignment === "start" ? 0.0 : (root.alignment === "center" ? 1.0 : 2.0)
@@ -225,6 +225,6 @@ Item {
         property real ringBarWidth: root.ringBarWidth
         property real tintStrength: root.tintStrength
 
-        fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/" + (root.continuous ? "visualizer_wave" : "visualizer_bars") + ".frag.qsb"
+        fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/audio/" + (root.continuous ? "visualizer_wave" : "visualizer_bars") + ".frag.qsb"
     }
 }
